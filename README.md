@@ -35,7 +35,7 @@ Outlined below are basic uses of the four main classes of the directory utility 
 * MySQLTools - Connect to MySQL database and execute queries
 * SQLiteSyntax - Generate SQLite syntax
 * SQLiteQuery - Execute SQLite queries
-* SQLiteTools - Generate and execite SQLite queires with a single call
+* SQLiteTools - Generate and execute SQLite queries with a single call
 
 ## Built With
 
