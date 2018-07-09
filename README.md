@@ -33,6 +33,7 @@ Outlined below are basic uses of the four main classes of the directory utility 
 * CSVExport - Export data to csv file 
 * DictTools - Save or load data to or from .npy dictionary file
 * MySQLTools - Connect to MySQL database and execute queries
+* PHPArray - Encode data as a sequential or associative PHP array
 * SQLiteSyntax - Generate SQLite syntax
 * SQLiteQuery - Execute SQLite queries
 * SQLiteTools - Generate and execute SQLite queries with a single call
