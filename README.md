@@ -37,16 +37,6 @@ Outlined below are basic uses of the four main classes of the directory utility 
 * SQLiteQuery - Execute SQLite queries
 * SQLiteTools - Generate and execite SQLite queires with a single call
 
-### DirPaths class
-
-This class generates a list of either files and or folders within a root directory.  The walk method generates a directory list of files by walking the file tree top down or bottom up.  The files and folders method generate a list of files or folders in the top level of the tree.
-
-```python
-# Root directory
-root = '/Volumes/Storage/test'
-dirs = DirPaths(root, to_include=['.psd', '.png'], to_exclude=['.dwg'])
-```
-
 ## Built With
 
 * [looptools](https://github.com/mrstephenneal/looptools) - Logging output, timing processes and counting iterations.
