@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='databasetools',
-    version='0.3.10',
+    version='0.3.11',
     packages=find_packages(),
     install_requires=[
         'looptools',
@@ -16,6 +16,8 @@ setup(
     license='MIT License',
     author='Stephen Neal',
     author_email='stephen@stephenneal.net',
-    description='A collection of database tools written in Python for handling basic actions with CSV files, '
+    description='Additional functionality added to DictTools allowing for dictionaries to be saved in numpy, '
+                'json or pickle format.',
+    long_description='A collection of database tools written in Python for handling basic actions with CSV files, '
                 'numpy dictionaries, SQLite databases and MySQL databases.'
 )
