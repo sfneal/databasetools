@@ -40,8 +40,14 @@ class CSVImport:
         :param file_name:
         """
         self.file_name = file_name
-        self.data = list
+        self.data = []
         self.csv_to_list()
+
+    def __iter__(self):
+        return iter(self.data)
+
+    def __len__(self):
+        return len(self.data)
 
     @property
     def list(self):

@@ -23,7 +23,6 @@ class DictTools:
             self.protocol = protocols_dict['json']
         # Join root directory and save name to create full path
         self.save_name = os.path.join(directory, str(name + self.protocol['ext']))
-        print(self.protocol)
 
     def __iter__(self):
         return iter(self.read_dictionary)
@@ -57,12 +56,9 @@ class DictTools:
         return protocols_dict
 
     def save(self, data_dict):
-        try:
-            dict_class = self.protocol['class']
-            dict_class(self.save_name).save(data_dict)
-            print("\n" + self.choice + " saved to " + self.save_name)
-        except:
-            print("\n" + self.choice + " not saved")
+        dict_class = self.protocol['class']
+        dict_class(self.save_name).save(data_dict)
+        print("\n" + self.choice + " saved to " + self.save_name)
 
     @property
     def load(self):

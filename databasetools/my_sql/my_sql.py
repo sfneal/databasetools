@@ -1,8 +1,6 @@
 from __future__ import print_function
 import mysql.connector
 from mysql.connector import errorcode
-from datetime import date, datetime, timedelta
-from tqdm import tqdm
 
 
 def get_column_value_strings(columns, query_type='insert'):
@@ -71,14 +69,13 @@ class MySQLTools:
         print('\tMySQL row successfully inserted')
 
     def insert_many(self, table, columns, values):
-        for row in tqdm(values, 'Inserting rows to ' + str(table)):
-            cols, vals = get_column_value_strings(columns)
+        cols, vals = get_column_value_strings(columns)
 
-            # Concatenate statement
-            statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
+        # Concatenate statement
+        statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
 
-            # Execute statement
-            self.cursor.execute(statement, row)
+        # Execute statement
+        self.cursor.executemany(statement, values)
 
         print('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
 
