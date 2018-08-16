@@ -8,9 +8,7 @@ setup(
         'looptools',
         'mysql-connector==2.1.6',
         'numpy',
-        'pandas',
         'tqdm',
-        'pathlib',
     ],
     url='https://github.com/mrstephenneal/databasetools',
     license='MIT License',
@@ -21,3 +19,4 @@ setup(
     long_description='A collection of database tools written in Python for handling basic actions with CSV files, '
                 'numpy dictionaries, SQLite databases and MySQL databases.'
 )
+
