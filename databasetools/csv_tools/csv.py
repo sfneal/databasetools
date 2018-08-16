@@ -26,7 +26,7 @@ class CSVExport:
         self.data_to_csv()
 
     def __str__(self):
-        return str(self.file_name)
+        return str(self.file_name).strip()
 
     def data_to_csv(self):
         df = DataFrame(self.data, columns=self.cols)
