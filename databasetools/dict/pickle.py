@@ -15,7 +15,7 @@ class Pickle:
         with open(self.save_name, 'wb') as fp:
             pickle.dump(data_dict, fp, protocol=pickle.HIGHEST_PROTOCOL)
 
-    def load(self):
+    def read(self):
         with open(self.save_name, 'rb') as fp:
             read_dictionary = pickle.load(fp)
             return dict(read_dictionary)

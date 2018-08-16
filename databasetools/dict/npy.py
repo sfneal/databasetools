@@ -11,6 +11,6 @@ class NPY:
     def write(self, data_dict):
         np.save(self.save_name, data_dict)
 
-    def load(self):
+    def read(self):
         read_dictionary = np.load(self.save_name).item()
         return dict(read_dictionary)

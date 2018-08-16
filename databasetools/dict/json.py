@@ -12,7 +12,7 @@ class JSON:
         with open(self.save_name, 'w') as fp:
             json.dump(data_dict, fp, sort_keys=True, indent=4)
 
-    def load(self):
+    def read(self):
         with open(self.save_name, 'r') as fp:
             read_dictionary = json.load(fp)
             return dict(read_dictionary)

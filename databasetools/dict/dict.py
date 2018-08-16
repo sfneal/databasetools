@@ -64,7 +64,7 @@ class DictTools:
     def load(self):
         try:
             dict_class = self.protocol['class']
-            read_dictionary = dict_class(self.save_name).load()
+            read_dictionary = dict_class(self.save_name).read()
             return read_dictionary
         except IOError:
             print('\nError: Unable to load file ' + str(self.save_name))
