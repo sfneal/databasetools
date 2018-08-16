@@ -1,4 +1,4 @@
-from databasetools.csv_tools import CSVExport, CSVImport
+from databasetools.csv import CSVExport, CSVImport
 from databasetools.sqlite import SQLiteSyntax, SQLiteQuery, SQLiteTools
 from databasetools.dict import DictTools
 from databasetools.mysql import MySQLTools
