@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class NPY:
     """
     Save and load Python dictionaries in numpy .npy format
@@ -7,7 +8,7 @@ class NPY:
     def __init__(self, save_path):
         self.save_name = save_path
 
-    def save(self, data_dict):
+    def write(self, data_dict):
         np.save(self.save_name, data_dict)
 
     def load(self):

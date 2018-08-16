@@ -11,11 +11,11 @@ class DictTools:
         Save or load data to or from .npy dictionary file
         :param directory: Directory to save or load file from
         :param name: File name
-        :param protocal: Method for saving and loading dictionaries
+        :param protocol: Method for saving and loading dictionaries
         """
         # Get dictionary of protocals
         protocols_dict = self.protocol_options()
-        self.choice = protocol.strip('.')  # Remove leading '.' if included in protocal var
+        self.choice = protocol.strip('.')  # Remove leading '.' if included in protocol var
         try:
             self.protocol = protocols_dict[self.choice]
         except KeyError:
@@ -57,7 +57,7 @@ class DictTools:
 
     def save(self, data_dict):
         dict_class = self.protocol['class']
-        dict_class(self.save_name).save(data_dict)
+        dict_class(self.save_name).write(data_dict)
         print("\n" + self.choice + " saved to " + self.save_name)
 
     @property
