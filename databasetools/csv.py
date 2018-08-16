@@ -1,77 +1,48 @@
 import os
 import csv
-from pandas.io.parsers import read_csv
-from pandas import DataFrame
-from pathlib import Path
 import inspect
 
 
-class CSVExport:
-    def __init__(self, data=None, cols=None, file_path=None, file_name=None):
+class CSV:
+    @staticmethod
+    def write(data, cols=None, file_path=None, file_name=None):
         """
         Export data to CSV file.
+
         :param data: Either a list of tuples or a list of lists.
         :param cols: List of column names, must be the same length as rows within data.
         :param file_path: String of path to save location directory.
         :param file_name: name of file without suffix ('yourfilename' not 'yourfilename.csv').
         """
-        self.data = data
-        self.cols = cols
+        # Set file path and name
         if file_path is None:
             file_path = os.getcwd()
         if file_name is None:
             file_name = get_calling_file()
 
-        self.file_name = Path(os.path.join(file_path, str(file_name + '.csv')))
-        self.data_to_csv()
+        # Push columns to first row
+        if cols is not None:
+            data.insert(cols, 0)
 
-    def __str__(self):
-        return str(self.file_name).strip()
+        file_name = os.path.join(file_path, str(file_name + '.csv'))
 
-    def data_to_csv(self):
-        df = DataFrame(self.data, columns=self.cols)
-        df.to_csv(self.file_name, index=False)
+        with open(file_name, 'w') as write:
+            wr = csv.writer(write)
+            wr.writerows(data)
+        return file_name
 
-
-class CSVImport:
-    def __init__(self, file_name):
-        """
-        Import csv file as list
-        :param file_name:
-        """
-        self.file_name = file_name
-        self.data = []
-        self.csv_to_list()
-
-    def __iter__(self):
-        return iter(self.data)
-
-    def __len__(self):
-        return len(self.data)
-
-    @property
-    def list(self):
-        return list(self.data)
-
-    def csv_to_list(self):
+    @staticmethod
+    def read(file_name):
         """
         Reads CSV file and returns list of contents
+
+        :param file_name: Path to csv file
         """
-        try:
-            with open(self.file_name, 'r') as f:
-                reader = csv.reader(f)
-                self.data = list(reader)
-        except FileNotFoundError:
-            print('No such file exists: ' + str(self.file_name))
-
-
-def remove_empty_cols(csv_file):
-    """
-    Remove empty columns from CSV file
-    """
-    data = read_csv(csv_file)
-    filtered_data = data.dropna(axis='columns', how='all')
-    filtered_data.to_csv(csv_file)
+        assert os.path.isfile(file_name), 'No such file exists: ' + str(file_name)
+        with open(file_name, 'r') as f:
+            reader = csv.reader(f)
+            data = list(reader)
+        return data
 
 
 def get_calling_file(file_path=None, result='name'):
@@ -91,3 +62,14 @@ def get_calling_file(file_path=None, result='name'):
         return path
     else:
         return path, name
+
+
+# Backward compatibility
+class CSVExport:
+    def __init__(self, data=None, cols=None, file_path=None, file_name=None):
+        CSV.write(data, cols, file_path, file_name)
+
+
+class CSVImport:
+    def __init__(self, file_name):
+        CSV.read(file_name)
