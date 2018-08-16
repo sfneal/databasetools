@@ -1,7 +1,7 @@
 from databasetools.csv_tools import CSVExport, CSVImport
 from databasetools.sqlite import SQLiteSyntax, SQLiteQuery, SQLiteTools
 from databasetools.dict import DictTools
-from databasetools.my_sql import MySQLTools
+from databasetools.mysql import MySQLTools
 from databasetools.php import PHPArray
 
 __name__ = "Database Tools"
