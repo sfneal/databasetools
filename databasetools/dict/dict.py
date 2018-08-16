@@ -1,6 +1,6 @@
 import os
 from pprint import pprint
-from databasetools.dict.json import JSON
+from databasetools.json import JSON
 from databasetools.dict.npy import NPY
 from databasetools.dict.pickle import Pickle
 
