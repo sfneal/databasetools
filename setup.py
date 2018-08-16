@@ -12,7 +12,7 @@ setup(
         'tqdm',
         'pathlib',
     ],
-    url='https://github.com/mrstephenneal/databasetools.git',
+    url='https://github.com/mrstephenneal/databasetools',
     license='MIT License',
     author='Stephen Neal',
     author_email='stephen@stephenneal.net',
