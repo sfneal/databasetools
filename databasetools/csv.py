@@ -1,5 +1,5 @@
 import os
-import csv as _csv
+import csv as csv_builtin
 import inspect
 
 
@@ -19,7 +19,7 @@ class CSV:
             file_path = os.path.join(os.getcwd(), get_calling_file())
 
         with open(file_path, 'w') as write:
-            wr = _csv.writer(write)
+            wr = csv_builtin.writer(write)
             wr.writerows(data)
         return file_path
 
@@ -32,7 +32,7 @@ class CSV:
         """
         assert os.path.isfile(file_name), 'No such file exists: ' + str(file_name)
         with open(file_name, 'r') as f:
-            reader = _csv.reader(f)
+            reader = csv_builtin.reader(f)
             data = list(reader)
         return data
 
