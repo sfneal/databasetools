@@ -116,7 +116,7 @@ class SQLiteQuery:
 
     def disconnect(self):
         self.c.close()
-        self.conn.close
+        self.conn.close()
 
     def create(self, statement):
         try:
