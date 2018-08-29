@@ -1,6 +1,5 @@
 from pprint import pprint
 from databasetools.json import JSON
-from databasetools.npy import NPY
 from databasetools.pickle import Pickle
 
 
