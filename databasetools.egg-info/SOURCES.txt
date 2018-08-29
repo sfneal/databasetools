@@ -1,0 +1,16 @@
+MANIFEST.in
+README.md
+setup.py
+databasetools/__init__.py
+databasetools/csv.py
+databasetools/dict.py
+databasetools/json.py
+databasetools/php.py
+databasetools/pickle.py
+databasetools/sql.py
+databasetools/sqlite.py
+databasetools.egg-info/PKG-INFO
+databasetools.egg-info/SOURCES.txt
+databasetools.egg-info/dependency_links.txt
+databasetools.egg-info/requires.txt
+databasetools.egg-info/top_level.txt

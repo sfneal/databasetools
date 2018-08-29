@@ -1,0 +1,10 @@
+Metadata-Version: 1.0
+Name: databasetools
+Version: 0.4.3
+Summary: Convenient data storage toolkit.
+Home-page: https://github.com/mrstephenneal/databasetools
+Author: Stephen Neal
+Author-email: stephen@stephenneal.net
+License: MIT License
+Description: A collection of database tools written in Python for handling basic actions with CSV files, numpy dictionaries, SQLite databases and MySQL databases.
+Platform: UNKNOWN
