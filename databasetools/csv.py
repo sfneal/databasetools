@@ -5,7 +5,7 @@ import inspect
 
 class CSV:
     @staticmethod
-    def write(data, cols=None, file_path=None, file_name=None):
+    def write(data, file_path=None):
         """
         Export data to CSV file.
 
@@ -16,20 +16,12 @@ class CSV:
         """
         # Set file path and name
         if file_path is None:
-            file_path = os.getcwd()
-        if file_name is None:
-            file_name = get_calling_file()
+            file_path = os.path.join(os.getcwd(), get_calling_file())
 
-        # Push columns to first row
-        if cols is not None:
-            data.insert(cols, 0)
-
-        file_name = os.path.join(file_path, str(file_name + '.csv'))
-
-        with open(file_name, 'w') as write:
+        with open(file_path, 'w') as write:
             wr = csv.writer(write)
             wr.writerows(data)
-        return file_name
+        return file_path
 
     @staticmethod
     def read(file_name):
@@ -67,7 +59,10 @@ def get_calling_file(file_path=None, result='name'):
 # Backward compatibility
 class CSVExport:
     def __init__(self, data=None, cols=None, file_path=None, file_name=None):
-        CSV.write(data, cols, file_path, file_name)
+        if cols:
+            data.insert(0, cols)
+        file_path = os.path.join(file_path, file_name) if file_name else file_path
+        CSV.write(data, file_path)
 
 
 class CSVImport:
