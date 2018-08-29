@@ -38,10 +38,6 @@ class DictTools:
     @staticmethod
     def protocol_options():
         protocols_dict = {
-            'npy': {
-                'class': NPY,
-                'ext': '.npy'
-            },
             'pickle': {
                 'class': Pickle,
                 'ext': '.p'
