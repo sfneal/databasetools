@@ -4,7 +4,8 @@ from databasetools.dict import DictTools
 from databasetools.mysql import MySQLTools
 from databasetools.php import PHPArray
 from databasetools.json import JSON
+from databasetools.pickle import Pickle
 
-__name__ = "Database Tools"
+
 __all__ = ["CSVExport", "CSVImport", "CSV", "SQLiteSyntax", "SQLiteQuery", "SQLiteTools", "DictTools", "MySQLTools",
            "PHPArray", "JSON"]
