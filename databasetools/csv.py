@@ -1,5 +1,5 @@
 import os
-import csv as csv_builtin
+import _csv as csv_builtin
 import inspect
 
 
