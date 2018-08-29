@@ -20,7 +20,7 @@ class DictTools:
             # Use Numpy as default
             self.protocol = protocols_dict['json']
         # Join root directory and save name to create full path
-        self.save_name = path + self.protocol['ext']
+        self.save_name = str(path) + self.protocol['ext']
 
     def __iter__(self):
         return iter(self.load)
