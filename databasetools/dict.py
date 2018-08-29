@@ -1,12 +1,11 @@
-import os
 from pprint import pprint
 from databasetools.json import JSON
-from databasetools.dict.npy import NPY
-from databasetools.dict.pickle import Pickle
+from databasetools.npy import NPY
+from databasetools.pickle import Pickle
 
 
 class DictTools:
-    def __init__(self, directory, name, protocol='json'):
+    def __init__(self, path, protocol='json'):
         """
         Save or load data to or from .npy dictionary file
         :param directory: Directory to save or load file from
@@ -22,10 +21,10 @@ class DictTools:
             # Use Numpy as default
             self.protocol = protocols_dict['json']
         # Join root directory and save name to create full path
-        self.save_name = os.path.join(directory, str(name + self.protocol['ext']))
+        self.save_name = path + self.protocol['ext']
 
     def __iter__(self):
-        return iter(self.read_dictionary)
+        return iter(self.load)
 
     @property
     def choices(self):
@@ -58,7 +57,7 @@ class DictTools:
     def save(self, data_dict):
         dict_class = self.protocol['class']
         dict_class(self.save_name).write(data_dict)
-        print("\n" + self.choice + " saved to " + self.save_name)
+        print(self.choice + " saved to " + self.save_name)
 
     @property
     def load(self):
@@ -67,5 +66,5 @@ class DictTools:
             read_dictionary = dict_class(self.save_name).read()
             return read_dictionary
         except IOError:
-            print('\nError: Unable to load file ' + str(self.save_name))
+            print('Error: Unable to load file ' + str(self.save_name))
 
