@@ -8,4 +8,4 @@ from databasetools.pickle import Pickle
 
 
 __all__ = ["CSVExport", "CSVImport", "CSV", "SQLiteSyntax", "SQLiteQuery", "SQLiteTools", "DictTools", "MySQLTools",
-           "PHPArray", "JSON"]
+           "PHPArray", "JSON", "Pickle"]
