@@ -10,15 +10,24 @@ class CSV:
         Export data to CSV file.
 
         :param data: Either a list of tuples or a list of lists.
-        :param cols: List of column names, must be the same length as rows within data.
         :param file_path: String of path to save location directory.
-        :param file_name: name of file without suffix ('yourfilename' not 'yourfilename.csv').
         """
         # Set file path and name
         if file_path is None:
             file_path = os.path.join(os.getcwd(), get_calling_file())
 
         with open(file_path, 'w') as write:
+            wr = csv_builtin.writer(write)
+            wr.writerows(data)
+        return file_path
+
+    @staticmethod
+    def append(data, file_path=None):
+        # Set file path and name
+        if file_path is None:
+            file_path = os.path.join(os.getcwd(), get_calling_file())
+
+        with open(file_path, 'a') as write:
             wr = csv_builtin.writer(write)
             wr.writerows(data)
         return file_path
