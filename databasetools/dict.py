@@ -4,7 +4,7 @@ from databasetools.pickle import Pickle
 
 
 class DictTools:
-    def __init__(self, path, protocol='json'):
+    def __init__(self, path, protocol='json', enable_printing=True):
         """
         Save or load data to or from .npy dictionary file
         :param directory: Directory to save or load file from
@@ -19,6 +19,8 @@ class DictTools:
         except KeyError:
             # Use Numpy as default
             self.protocol = protocols_dict['json']
+
+        self.enable_printing = enable_printing
         # Join root directory and save name to create full path
         self.save_name = str(path) + self.protocol['ext']
 
@@ -31,7 +33,7 @@ class DictTools:
         Print dictionary of protocal choices for reference
         :return: protocals dictionary
         """
-        protocols_dict = self.protocal_options()
+        protocols_dict = self.protocol_options()
         pprint(protocols_dict)
         return protocols_dict
 
@@ -52,7 +54,8 @@ class DictTools:
     def save(self, data_dict):
         dict_class = self.protocol['class']
         dict_class(self.save_name).write(data_dict)
-        print(self.choice + " saved to " + self.save_name)
+        if self.enable_printing:
+            print(self.choice + " saved to " + self.save_name)
 
     @property
     def load(self):
@@ -61,5 +64,6 @@ class DictTools:
             read_dictionary = dict_class(self.save_name).read()
             return read_dictionary
         except IOError:
-            print('Error: Unable to load file ' + str(self.save_name))
+            if self.enable_printing:
+                print('Error: Unable to load file ' + str(self.save_name))
 
