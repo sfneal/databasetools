@@ -4,43 +4,33 @@ import inspect
 
 
 class CSV:
-    @staticmethod
-    def write(data, file_path=None):
+    def __init__(self, file_path=None):
+        # Set file path and name
+        if file_path is None:
+            self.file_path = os.path.join(os.getcwd(), get_calling_file())
+        else:
+            self.file_path = file_path
+
+    def write(self, data, method='w'):
         """
         Export data to CSV file.
 
         :param data: Either a list of tuples or a list of lists.
-        :param file_path: String of path to save location directory.
+        :param method: File opening method.
         """
-        # Set file path and name
-        if file_path is None:
-            file_path = os.path.join(os.getcwd(), get_calling_file())
-
-        with open(file_path, 'w') as write:
+        with open(self.file_path, method) as write:
             wr = csv_builtin.writer(write)
             wr.writerows(data)
-        return file_path
+        return self.file_path
 
-    @staticmethod
-    def append(data, file_path=None):
-        # Set file path and name
-        if file_path is None:
-            file_path = os.path.join(os.getcwd(), get_calling_file())
+    def append(self, data):
+        """Append rows to an existing CSV file"""
+        return self.write(data, method='a')
 
-        with open(file_path, 'a') as write:
-            wr = csv_builtin.writer(write)
-            wr.writerows(data)
-        return file_path
-
-    @staticmethod
-    def read(file_name):
-        """
-        Reads CSV file and returns list of contents
-
-        :param file_name: Path to csv file
-        """
-        assert os.path.isfile(file_name), 'No such file exists: ' + str(file_name)
-        with open(file_name, 'r') as f:
+    def read(self):
+        """Reads CSV file and returns list of contents"""
+        assert os.path.isfile(self.file_path), 'No such file exists: ' + str(self.file_path)
+        with open(self.file_path, 'r') as f:
             reader = csv_builtin.reader(f)
             data = list(reader)
         return data
