@@ -10,7 +10,7 @@ class JSON:
 
     def write(self, data_dict):
         with open(self.save_name, 'w') as fp:
-            json.dump(data_dict, fp, sort_keys=True, indent=4)
+            json.dump(data_dict, fp, sort_keys=True, indent=2)
 
     def read(self):
         with open(self.save_name, 'r') as fp:
