@@ -15,4 +15,4 @@ class JSON:
     def read(self):
         with open(self.save_name, 'r') as fp:
             read_dictionary = json.load(fp)
-            return dict(read_dictionary)
+            return read_dictionary
