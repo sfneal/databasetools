@@ -18,6 +18,10 @@ class CSV:
         :param data: Either a list of tuples or a list of lists.
         :param method: File opening method.
         """
+        # Add .csv file extension
+        if not self.file_path.endswith('.csv'):
+            self.file_path = self.file_path + '.csv'
+
         with open(self.file_path, method) as write:
             wr = csv_builtin.writer(write)
             wr.writerows(data)
