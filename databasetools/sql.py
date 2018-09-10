@@ -64,6 +64,10 @@ class MySQLTools:
             print('\tMySQL rows successfully queried')
         return rows
 
+    def select(self, table, cols):
+        # TODO: Write function to select from a table with constraints
+        pass
+
     def insert(self, table, columns, values):
         cols, vals = get_column_value_strings(columns)
 
