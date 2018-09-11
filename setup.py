@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='databasetools',
-    version='0.4.7',
+    version='0.4.8',
     packages=find_packages(),
     install_requires=[
         'looptools',
