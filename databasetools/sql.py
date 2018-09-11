@@ -53,6 +53,10 @@ class MySQLTools:
                 if self.enable_printing:
                     print(err)
 
+    def select(self, table, cols):
+        # TODO: Write function to select from a table with constraints
+        pass
+
     def select_all(self, table):
         # Concatenate statement
         statement = ("SELECT * FROM " + str(table))
@@ -64,8 +68,8 @@ class MySQLTools:
             print('\tMySQL rows successfully queried')
         return rows
 
-    def select(self, table, cols):
-        # TODO: Write function to select from a table with constraints
+    def select_all_join(self, table1, table2, key):
+        # TODO: Write function to run a select * left join query
         pass
 
     def insert(self, table, columns, values):
