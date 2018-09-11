@@ -24,6 +24,10 @@ def get_column_value_strings(columns, query_type='insert'):
         return cols
 
 
+def join_columns(cols):
+    return ", ".join([i for i in cols])
+
+
 class MySQLTools:
     def __init__(self, config, enable_printing=True):
         """
@@ -53,20 +57,37 @@ class MySQLTools:
                 if self.enable_printing:
                     print(err)
 
-    def select(self, table, cols):
-        # TODO: Write function to select from a table with constraints
-        pass
-
-    def select_all(self, table):
-        # Concatenate statement
-        statement = ("SELECT * FROM " + str(table))
-
+    def fetch(self, statement):
         # Execute statement
         self.cursor.execute(statement)
         rows = [row for row in self.cursor]
         if self.enable_printing:
             print('\tMySQL rows successfully queried')
         return rows
+
+    def select(self, table, cols):
+        # Concatenate statement
+        cols_str = join_columns(cols)
+        statement = ("SELECT " + cols_str + " FROM " + str(table))
+        return self.fetch(statement)
+
+    def select_where(self, table, cols, where):
+        # Either join list of columns into string or set columns to * (all)
+        if isinstance(cols, list):
+            cols_str = join_columns(cols)
+        else:
+            cols_str = "*"
+
+        # Unpack WHERE clause dictionary into tuple
+        where_col, where_val = where
+
+        statement = ("SELECT " + cols_str + " FROM " + str(table) + ' WHERE ' + str(where_col) + '=' + str(where_val))
+        self.fetch(statement)
+
+    def select_all(self, table):
+        # Concatenate statement
+        statement = ("SELECT * FROM " + str(table))
+        return self.fetch(statement)
 
     def select_all_join(self, table1, table2, key):
         # TODO: Write function to run a select * left join query
