@@ -48,14 +48,10 @@ class MySQLTools:
 
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                if self.enable_printing:
-                    print("Something is wrong with your user name or password")
+                print("Something is wrong with your user name or password")
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                if self.enable_printing:
-                    print("Database does not exist")
-            else:
-                if self.enable_printing:
-                    print(err)
+                print("Database does not exist")
+            raise err
 
     def fetch(self, statement):
         # Execute statement
