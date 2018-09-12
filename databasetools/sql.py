@@ -39,6 +39,13 @@ class MySQLTools:
         self.cnx = None
         self.connect(config)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.commit()
+        self.close()
+
     def connect(self, config):
         try:
             self.cnx = mysql.connector.connect(**config)
