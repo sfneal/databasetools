@@ -5,7 +5,6 @@ setup(
     version='0.4.10',
     packages=find_packages(),
     install_requires=[
-        'looptools',
         'mysql-connector>=2.1.6',
         'tqdm',
     ],
