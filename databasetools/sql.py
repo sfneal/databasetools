@@ -130,7 +130,7 @@ class MySQLTools:
         """
         # Use self.insert if only one row is being inserted
         if len(values) < 2:
-            self.insert(table, columns, values)
+            self.insert(table, columns, values[0])
         else:
             # Concatenate statement
             cols, vals = get_column_value_strings(columns)
