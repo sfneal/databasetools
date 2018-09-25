@@ -43,8 +43,8 @@ class MySQLTools:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.commit()
-        self.close()
+        self._commit()
+        self._close()
 
     def _printer(self, msg):
         """Printing method for internal use."""
@@ -116,7 +116,6 @@ class MySQLTools:
 
         # Execute statement
         self._cursor.executemany(statement, values)
-
         self._printer('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
 
     def update(self, table, columns, values, where):
@@ -135,9 +134,9 @@ class MySQLTools:
         self._cursor.execute(statement)
         self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
 
-    def commit(self):
+    def _commit(self):
         self._cnx.commit()
 
-    def close(self):
+    def _close(self):
         self._cursor.close()
         self._cnx.close()
