@@ -46,26 +46,29 @@ class MySQLTools:
         self.commit()
         self.close()
 
+    def _printer(self, msg):
+        """Printing method for internal use."""
+        if self.enable_printing:
+            print(msg)
+
     def connect(self, config):
         try:
             self.cnx = mysql.connector.connect(**config)
             self.cursor = self.cnx.cursor()
-            if self.enable_printing:
-                print('\tMySQL DB connection established')
+            self._printer('\tMySQL DB connection established')
 
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Something is wrong with your user name or password")
+                self._printer("Something is wrong with your user name or password")
             elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Database does not exist")
+                self._printer("Database does not exist")
             raise err
 
     def fetch(self, statement):
         # Execute statement
         self.cursor.execute(statement)
         rows = [row for row in self.cursor]
-        if self.enable_printing:
-            print('\tMySQL rows successfully queried')
+        self._printer('\tMySQL rows successfully queried')
         return rows
 
     def select(self, table, cols):
@@ -104,8 +107,7 @@ class MySQLTools:
 
         # Execute statement
         self.cursor.execute(statement, values)
-        if self.enable_printing:
-            print('\tMySQL row successfully inserted')
+        self._printer('\tMySQL row successfully inserted')
 
     def insert_many(self, table, columns, values):
         cols, vals = get_column_value_strings(columns)
@@ -116,8 +118,7 @@ class MySQLTools:
         # Execute statement
         self.cursor.executemany(statement, values)
 
-        if self.enable_printing:
-            print('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
+        self._printer('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
 
     def update(self, table, columns, values, where):
         where_col, where_val = where  # Unpack WHERE clause dictionary into tuple
@@ -128,14 +129,12 @@ class MySQLTools:
 
         # Execute statement
         self.cursor.execute(statement, values)
-        if self.enable_printing:
-            print('\tMySQL rows (' + str(len(values)) + ') successfully UPDATED')
+        self._printer('\tMySQL rows (' + str(len(values)) + ') successfully UPDATED')
 
     def truncate(self, table):
         statement = "TRUNCATE " + str(table)
         self.cursor.execute(statement)
-        if self.enable_printing:
-            print('\tMySQL table ' + str(table) + ' successfully truncated')
+        self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
 
     def commit(self):
         self.cnx.commit()
