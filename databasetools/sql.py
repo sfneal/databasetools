@@ -35,9 +35,9 @@ class MySQLTools:
         :param config: MySQL server configuration settings
         """
         self.enable_printing = enable_printing
-        self.cursor = None
-        self.cnx = None
-        self.connect(config)
+        self._cursor = None
+        self._cnx = None
+        self._connect(config)
 
     def __enter__(self):
         return self
@@ -51,10 +51,10 @@ class MySQLTools:
         if self.enable_printing:
             print(msg)
 
-    def connect(self, config):
+    def _connect(self, config):
         try:
-            self.cnx = mysql.connector.connect(**config)
-            self.cursor = self.cnx.cursor()
+            self._cnx = mysql.connector.connect(**config)
+            self._cursor = self._cnx.cursor()
             self._printer('\tMySQL DB connection established')
 
         except mysql.connector.Error as err:
@@ -66,10 +66,9 @@ class MySQLTools:
 
     def fetch(self, statement):
         # Execute statement
-        self.cursor.execute(statement)
-        rows = [row for row in self.cursor]
+        self._cursor.execute(statement)
         self._printer('\tMySQL rows successfully queried')
-        return rows
+        return [row for row in self._cursor]
 
     def select(self, table, cols):
         # Concatenate statement
@@ -106,7 +105,7 @@ class MySQLTools:
         statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
 
         # Execute statement
-        self.cursor.execute(statement, values)
+        self._cursor.execute(statement, values)
         self._printer('\tMySQL row successfully inserted')
 
     def insert_many(self, table, columns, values):
@@ -116,7 +115,7 @@ class MySQLTools:
         statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
 
         # Execute statement
-        self.cursor.executemany(statement, values)
+        self._cursor.executemany(statement, values)
 
         self._printer('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
 
@@ -128,17 +127,17 @@ class MySQLTools:
         statement = ("UPDATE " + str(table) + " SET " + str(cols) + ' WHERE ' + str(where_col) + '=' + str(where_val))
 
         # Execute statement
-        self.cursor.execute(statement, values)
+        self._cursor.execute(statement, values)
         self._printer('\tMySQL rows (' + str(len(values)) + ') successfully UPDATED')
 
     def truncate(self, table):
         statement = "TRUNCATE " + str(table)
-        self.cursor.execute(statement)
+        self._cursor.execute(statement)
         self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
 
     def commit(self):
-        self.cnx.commit()
+        self._cnx.commit()
 
     def close(self):
-        self.cursor.close()
-        self.cnx.close()
+        self._cursor.close()
+        self._cnx.close()
