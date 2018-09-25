@@ -128,13 +128,17 @@ class MySQLTools:
 
         If only one row is found, self.insert method will be used.
         """
-        # Concatenate statement
-        cols, vals = get_column_value_strings(columns)
-        statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
+        # Use self.insert if only one row is being inserted
+        if len(values) < 2:
+            self.insert(table, columns, values)
+        else:
+            # Concatenate statement
+            cols, vals = get_column_value_strings(columns)
+            statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
 
-        # Execute statement
-        self._cursor.executemany(statement, values)
-        self._printer('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
+            # Execute statement
+            self._cursor.executemany(statement, values)
+            self._printer('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
 
     def update(self, table, columns, values, where):
         """Update the values of a particular row where a value is met."""
