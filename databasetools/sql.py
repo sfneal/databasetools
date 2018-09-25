@@ -46,11 +46,6 @@ class MySQLTools:
         self._commit()
         self._close()
 
-    def _printer(self, msg):
-        """Printing method for internal use."""
-        if self.enable_printing:
-            print(msg)
-
     def _connect(self, config):
         try:
             self._cnx = mysql.connector.connect(**config)
@@ -64,7 +59,19 @@ class MySQLTools:
                 self._printer("Database does not exist")
             raise err
 
-    def fetch(self, statement):
+    def _printer(self, msg):
+        """Printing method for internal use."""
+        if self.enable_printing:
+            print(msg)
+
+    def _close(self):
+        self._cursor.close()
+        self._cnx.close()
+
+    def _commit(self):
+        self._cnx.commit()
+
+    def _fetch(self, statement):
         # Execute statement
         self._cursor.execute(statement)
         self._printer('\tMySQL rows successfully queried')
@@ -74,7 +81,7 @@ class MySQLTools:
         # Concatenate statement
         cols_str = join_columns(cols)
         statement = ("SELECT " + cols_str + " FROM " + str(table))
-        return self.fetch(statement)
+        return self._fetch(statement)
 
     def select_where(self, table, cols, where):
         # Either join list of columns into string or set columns to * (all)
@@ -87,12 +94,12 @@ class MySQLTools:
         where_col, where_val = where
 
         statement = ("SELECT " + cols_str + " FROM " + str(table) + ' WHERE ' + str(where_col) + '=' + str(where_val))
-        self.fetch(statement)
+        self._fetch(statement)
 
     def select_all(self, table):
         # Concatenate statement
         statement = ("SELECT * FROM " + str(table))
-        return self.fetch(statement)
+        return self._fetch(statement)
 
     def select_all_join(self, table1, table2, key):
         # TODO: Write function to run a select * left join query
@@ -133,10 +140,3 @@ class MySQLTools:
         statement = "TRUNCATE " + str(table)
         self._cursor.execute(statement)
         self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
-
-    def _commit(self):
-        self._cnx.commit()
-
-    def _close(self):
-        self._cursor.close()
-        self._cnx.close()
