@@ -2,7 +2,6 @@ import _csv
 import ast
 import sqlite3
 from tqdm import tqdm
-from looptools import Counter
 
 
 class SQLiteSyntax:
@@ -128,7 +127,6 @@ class SQLiteQuery:
             print('\tStatement: ' + str(statement))
 
     def insert(self, statement):
-        count = Counter()
         self.conn.commit()
         errors = []
         for each in tqdm(statement, 'Inserting Rows'):
@@ -136,7 +134,7 @@ class SQLiteQuery:
                 self.c.execute(each)
                 self.conn.commit()
             except:
-                errors.append(str('\tError: ') + str(count.up) + ": " + str(each))
+                errors.append(str('\tError: ') + ": " + str(each))
 
         print("\tSQLite DB insert errors:")
         for e in errors:
