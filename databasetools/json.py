@@ -14,3 +14,9 @@ class JSON:
         with open(self.save_name, 'r') as fp:
             read_dictionary = json.load(fp)
             return read_dictionary
+
+    def update(self, data, key):
+        """Update a key's value's in a JSON file."""
+        og_data = self.read()
+        og_data[key] = data
+        self.write(og_data)
