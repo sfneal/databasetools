@@ -212,6 +212,8 @@ class MySQLTools:
         fails = [com + ';' for com in fails]
         self._printer(success, 'total successful commands')
         self._printer(len(fails), 'total failed commands')
+
+        # Dump failed commands to text file
         txt_file = os.path.join(os.path.dirname(sql_script), 'sql fails.txt')
         with open(txt_file) as txt:
             txt.writelines(fails)
