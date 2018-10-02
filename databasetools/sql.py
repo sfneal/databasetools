@@ -2,6 +2,7 @@ import os
 import mysql.connector
 from mysql.connector import errorcode
 from tqdm import tqdm
+from databasetools.sqlprep import prepare_sql
 
 
 def get_column_value_strings(columns, query_type='insert'):
@@ -191,6 +192,7 @@ class MySQL:
 
     def truncate_database(self):
         """Drop all tables in a database."""
+        self.enable_printing = False
         # Loop through each table and execute a drop command
         return [self.drop_table(table) for table in
                 tqdm(self.tables, total=len(self.tables), desc='Truncating database')]
@@ -243,7 +245,7 @@ class MySQL:
 
         # all SQL commands (split on ';')
         # remove dbo. prefixes from table names
-        sql_commands = [com.replace("dbo.", '') for com in sql_file.split(';')]
+        sql_commands = [prepare_sql(com.replace("dbo.", '')) for com in sql_file.split(';')]
         self._printer(len(sql_commands), 'Total commands')
 
         # Save failed commands to list
