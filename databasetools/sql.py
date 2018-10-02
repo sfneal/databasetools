@@ -267,12 +267,12 @@ class MySQL:
         # Dump failed commands to text file
         if len(fails) > 1:
             # Re-add semi-colon separator
-            fails = [com + ';' for com in fails]
+            fails = [com + ';\n' for com in fails]
             self._printer(len(fails), 'total failed commands')
 
             # Dump failed commands to text file in the same directory as the script
             txt_file = os.path.join(os.path.dirname(sql_script),
-                                    str(os.path.basename(sql_script).rsplit('.')[0]) + '_fails.txt')
+                                    str(os.path.basename(sql_script).strip('_fails').rsplit('.')[0]) + '_fails.sql')
             self._printer('Fail commands dumped to', txt_file)
             with open(txt_file, 'w') as txt:
                 txt.writelines(fails)
