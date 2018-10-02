@@ -79,7 +79,13 @@ class MySQL:
         # Execute statement
         self._cursor.execute(statement)
         self._printer('\tMySQL rows successfully queried')
-        return [row for row in self._cursor]
+        rows = []
+        for row in self._cursor:
+            if len(row) == 1:
+                rows.append(row[0])
+            else:
+                rows.append(row)
+        return rows
 
     def select(self, table, cols):
         """Query only certain columns from a table and every row."""
@@ -220,6 +226,10 @@ class MySQL:
             with open(txt_file, 'w') as txt:
                 txt.writelines(fails)
             self._printer('Fail commands dumped to', txt_file)
+
+    def get_tables(self):
+        statement = 'show tables'
+        return self._fetch(statement)
 
 
 class MySQLTools(MySQL):
