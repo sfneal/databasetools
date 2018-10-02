@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='databasetools',
-    version='1.1.2',
+    version='1.2.0',
     packages=find_packages(),
     install_requires=[
         'mysql-connector>=2.1.6',
