@@ -245,7 +245,7 @@ class MySQL:
 
         # all SQL commands (split on ';')
         # remove dbo. prefixes from table names
-        sql_commands = [prepare_sql(com.replace("dbo.", '')) for com in sql_file.split(';')]
+        sql_commands = [com.replace("dbo.", '') for com in sql_file.split(';')]
         self._printer(len(sql_commands), 'Total commands')
 
         # Save failed commands to list
