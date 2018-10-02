@@ -29,7 +29,7 @@ def join_columns(cols):
     return ", ".join([i for i in cols])
 
 
-class MySQLTools:
+class MySQL:
     def __init__(self, config, enable_printing=True):
         """
         Connect to MySQL database and execute queries
@@ -207,12 +207,22 @@ class MySQLTools:
                 fails.append(command)
 
         # Write fail commands to a text file
-        fails = [com + ';' for com in fails]
         self._printer(success, 'total successful commands')
-        self._printer(len(fails), 'total failed commands')
 
         # Dump failed commands to text file
-        txt_file = os.path.join(os.path.dirname(sql_script), 'sql fails.txt')
-        with open(txt_file) as txt:
-            txt.writelines(fails)
-        self._printer('Fail commands dumped to', txt_file)
+        if len(fails) < 1:
+            # Re-add semi-colon separator
+            fails = [com + ';' for com in fails]
+            self._printer(len(fails), 'total failed commands')
+
+            # Dump failed commands to text file in the same directory as the script
+            txt_file = os.path.join(os.path.dirname(sql_script), 'sql fails.txt')
+            with open(txt_file, 'w') as txt:
+                txt.writelines(fails)
+            self._printer('Fail commands dumped to', txt_file)
+
+
+class MySQLTools(MySQL):
+    def __init__(self, config, enable_printing=True):
+        """Wrapper class for MySQL"""
+        super(MySQLTools, self).__init__(config, enable_printing)
