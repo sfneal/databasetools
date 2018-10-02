@@ -3,7 +3,7 @@ from databasetools import MySQLTools
 
 
 config = {
-    "database": "hpa_allin_og",
+    "database": "hpa_allin",
     "host": "stephenneal.net",
     "password": "Stealth19!",
     "port": 3306,
@@ -14,6 +14,17 @@ config = {
 
 with MySQLTools(config) as sql:
     # Retrieve list of tables
-    t = sql.get_tables()
-    print(t, '\n')
+    t = sql.tables
+    for i in t:
+        print(i)
+    print('\n')
+
+    # Show table data schema
+    s = sql.get_schema('AddressEmailPhoneType', with_headers=True)
+    for i in s:
+        print(i)
+
+    # Count number of rows
+    c = sql.count_rows_all()
+    print(c)
 

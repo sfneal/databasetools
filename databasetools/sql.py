@@ -47,6 +47,17 @@ class MySQL:
         self._commit()
         self._close()
 
+    @property
+    def tables(self):
+        """Retrieve a list of tables in the connected database"""
+        statement = 'show tables'
+        return self._fetch(statement)
+
+    @property
+    def databases(self):
+        """Retrieve a list of databases that are accessible under the current connection"""
+        return self._fetch('show databases')
+
     def _connect(self, config):
         """Establish a connection with a MySQL database."""
         try:
@@ -190,6 +201,11 @@ class MySQL:
     #     statement = "create table " + table + " ("
     #     self._printer(statement)
 
+    def drop_table(self, table):
+        """Drop a table from the database."""
+        self._cursor.execute('DROP TABLE ' + table)
+        self._commit()
+
     def execute_sql_script(self, sql_script):
         """Execute a sql file one command at a time."""
         # Open and read the file as a single buffer
@@ -232,16 +248,6 @@ class MySQL:
                 txt.writelines(fails)
             self._printer('Fail commands dumped to', txt_file)
 
-    def get_tables(self):
-        """Retrieve a list of tables in the connected database"""
-        statement = 'show tables'
-        return self._fetch(statement)
-
-    def get_databases(self):
-        """Retrieve a list of databases that are accessible under the current connection"""
-        statement = 'show databases'
-        return self._fetch(statement)
-
     def get_schema(self, table, with_headers=False):
         """Retrieve the database schema for a particular table."""
         statement = 'desc ' + table
@@ -260,7 +266,7 @@ class MySQL:
     def count_rows_all(self):
         """Get the number of rows for every table in the database."""
         self.enable_printing = False
-        return {table: self.count_rows(table) for table in self.get_tables()}
+        return {table: self.count_rows(table) for table in self.tables}
 
 
 class MySQLTools(MySQL):
