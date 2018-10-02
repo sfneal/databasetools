@@ -160,6 +160,7 @@ class MySQLTools:
 
     def create_table(self, table, data, headers=None):
         """Generate and execute a create table query by parsing a 2D dataset"""
+        # TODO: Fix
         # Set headers list
         if not headers:
             headers = data[0]
