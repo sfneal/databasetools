@@ -192,6 +192,7 @@ class MySQLTools:
 
         # Save failed commands to list
         fails = []
+        success = 0
 
         # Execute every command from the input file
         for count, command in enumerate(sql_commands):
@@ -202,12 +203,16 @@ class MySQLTools:
                 self._cursor.execute(command)
                 self._commit()
                 self._printer(count, 'success')
+                success += 1
             except:
                 fails.append(command)
                 self._printer(count, 'fail')
 
         # Write fail commands to a text file
         fails = [com + ';' for com in fails]
+        self._printer(success, 'total successful commands')
         self._printer(len(fails), 'total failed commands')
-        with open(os.path.join(os.path.dirname(sql_script), 'sql fails.txt')) as txt:
+        txt_file = os.path.join(os.path.dirname(sql_script), 'sql fails.txt')
+        with open(txt_file) as txt:
             txt.writelines(fails)
+        self._printer('Fail commands dumped to', txt_file)
