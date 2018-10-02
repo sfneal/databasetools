@@ -78,14 +78,19 @@ class MySQL:
         """Execute a SQL query and return values."""
         # Execute statement
         self._cursor.execute(statement)
-        self._printer('\tMySQL rows successfully queried')
         rows = []
         for row in self._cursor:
             if len(row) == 1:
                 rows.append(row[0])
             else:
                 rows.append(row)
-        return rows
+        self._printer('\tMySQL rows successfully queried', len(rows))
+
+        # Return a single item if the list only has one item
+        if len(rows) == 1:
+            return rows[0]
+        else:
+            return rows
 
     def select(self, table, cols):
         """Query only certain columns from a table and every row."""
@@ -228,8 +233,34 @@ class MySQL:
             self._printer('Fail commands dumped to', txt_file)
 
     def get_tables(self):
+        """Retrieve a list of tables in the connected database"""
         statement = 'show tables'
         return self._fetch(statement)
+
+    def get_databases(self):
+        """Retrieve a list of databases that are accessible under the current connection"""
+        statement = 'show databases'
+        return self._fetch(statement)
+
+    def get_schema(self, table, with_headers=False):
+        """Retrieve the database schema for a particular table."""
+        statement = 'desc ' + table
+        f = self._fetch(statement)
+
+        # If with_headers is True, insert headers to first row before returning
+        if with_headers:
+            f.insert(0, ('Type', 'Null', 'Key', 'Default', 'Extra'))
+        return f
+
+    def count_rows(self, table):
+        """Get the number of rows in a particular table"""
+        statement = 'SELECT COUNT(*) FROM ' + table
+        return self._fetch(statement)
+
+    def count_rows_all(self):
+        """Get the number of rows for every table in the database."""
+        self.enable_printing = False
+        return {table: self.count_rows(table) for table in self.get_tables()}
 
 
 class MySQLTools(MySQL):
