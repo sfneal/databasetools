@@ -157,3 +157,22 @@ class MySQLTools:
         statement = "TRUNCATE " + str(table)
         self._cursor.execute(statement)
         self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
+
+    def create_table(self, table, data, headers=None):
+        """Generate and execute a create table query by parsing a 2D dataset"""
+        # Set headers list
+        if not headers:
+            headers = data[0]
+
+        # Create dictionary columns and data types from headers list
+        data_types = {header: None for header in headers}
+
+        # Confirm that each row of the dataset is the same length
+        for row in data:
+            assert len(row) == len(headers)
+
+        # Create list of columns
+        columns = [header + ' ' + data_type for header, data_type in data_types]
+        print(columns)
+        statement = "create table " + table + " ("
+        print(statement)
