@@ -216,6 +216,7 @@ class MySQL:
             if count < 1:
                 # Drop table if it contains no rows
                 self.drop_table(table)
+                self._printer('Dropped table', table)
 
     def execute_sql_script(self, sql_script):
         """Execute a sql file one command at a time."""
