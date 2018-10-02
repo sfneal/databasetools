@@ -258,10 +258,11 @@ class MySQL:
             self._printer(len(fails), 'total failed commands')
 
             # Dump failed commands to text file in the same directory as the script
-            txt_file = os.path.join(os.path.dirname(sql_script), 'sql fails.txt')
+            txt_file = os.path.join(os.path.dirname(sql_script),
+                                    str(os.path.basename(sql_script).rsplit('.')[0]) + '_fails.txt')
+            self._printer('Fail commands dumped to', txt_file)
             with open(txt_file, 'w') as txt:
                 txt.writelines(fails)
-            self._printer('Fail commands dumped to', txt_file)
 
     def get_schema(self, table, with_headers=False):
         """Retrieve the database schema for a particular table."""
