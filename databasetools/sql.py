@@ -103,6 +103,14 @@ class MySQL:
         else:
             return rows
 
+    def execute(self, command):
+        self._cursor.execute(command)
+        self._commit()
+
+    def executemany(self, command):
+        self._cursor.executemany(command)
+        self._commit()
+
     def select(self, table, cols):
         """Query only certain columns from a table and every row."""
         # Concatenate statement
@@ -142,7 +150,7 @@ class MySQL:
         statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
 
         # Execute statement
-        self._cursor.execute(statement, values)
+        self.execute(statement, values)
         self._printer('\tMySQL row successfully inserted')
 
     def insert_many(self, table, columns, values):
@@ -178,7 +186,7 @@ class MySQL:
     def truncate(self, table):
         """Empty a table by deleting all of its rows."""
         statement = "TRUNCATE " + str(table)
-        self._cursor.execute(statement)
+        self.execute(statement)
         self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
 
     def truncate_database(self):
@@ -209,8 +217,7 @@ class MySQL:
 
     def drop_table(self, table):
         """Drop a table from a database."""
-        self._cursor.execute('DROP TABLE ' + table)
-        self._commit()
+        self.execute('DROP TABLE ' + table)
         return table
 
     def drop_empty_tables(self):
@@ -249,8 +256,7 @@ class MySQL:
             # For example, if the tables do not yet exist, this will skip over
             # the DROP TABLE commands
             try:
-                self._cursor.execute(command)
-                self._commit()
+                self.execute(command)
                 success += 1
             except:
                 fails.append(command)
