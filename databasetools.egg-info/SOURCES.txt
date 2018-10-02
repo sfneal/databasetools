@@ -9,6 +9,7 @@ databasetools/php.py
 databasetools/pickle.py
 databasetools/sql.py
 databasetools/sqlite.py
+databasetools/sqlprep.py
 databasetools.egg-info/PKG-INFO
 databasetools.egg-info/SOURCES.txt
 databasetools.egg-info/dependency_links.txt
