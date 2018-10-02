@@ -1,6 +1,7 @@
 import os
 import mysql.connector
 from mysql.connector import errorcode
+from tqdm import tqdm
 
 
 def get_column_value_strings(columns, query_type='insert'):
@@ -194,18 +195,16 @@ class MySQLTools:
         success = 0
 
         # Execute every command from the input file
-        for count, command in enumerate(sql_commands):
+        for command in tqdm(sql_commands, total=len(sql_commands), desc='Executing SQL Commands'):
             # This will skip and report errors
             # For example, if the tables do not yet exist, this will skip over
             # the DROP TABLE commands
             try:
                 self._cursor.execute(command)
                 self._commit()
-                self._printer(count, 'success')
                 success += 1
             except:
                 fails.append(command)
-                self._printer(count, 'fail')
 
         # Write fail commands to a text file
         fails = [com + ';' for com in fails]
