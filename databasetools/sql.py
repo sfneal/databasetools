@@ -210,6 +210,7 @@ class MySQL:
         """Drop all empty tables in a database."""
         # Count number of rows
         counts = self.count_rows_all()
+        drops = []
 
         # Loop through each table key and validate that rows count is not 0
         for table, count in counts.items():
@@ -217,6 +218,8 @@ class MySQL:
                 # Drop table if it contains no rows
                 self.drop_table(table)
                 self._printer('Dropped table', table)
+                drops.append(table)
+        return drops
 
     def execute_sql_script(self, sql_script):
         """Execute a sql file one command at a time."""
