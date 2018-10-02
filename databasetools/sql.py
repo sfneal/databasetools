@@ -206,6 +206,17 @@ class MySQL:
         self._cursor.execute('DROP TABLE ' + table)
         self._commit()
 
+    def drop_empty_tables(self):
+        """Drop all empty tables in a database."""
+        # Count number of rows
+        counts = self.count_rows_all()
+
+        # Loop through each table key and validate that rows count is not 0
+        for table, count in counts.items():
+            if count < 1:
+                # Drop table if it contains no rows
+                self.drop_table(table)
+
     def execute_sql_script(self, sql_script):
         """Execute a sql file one command at a time."""
         # Open and read the file as a single buffer

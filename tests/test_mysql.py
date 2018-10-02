@@ -23,8 +23,11 @@ with MySQLTools(config) as sql:
     s = sql.get_schema('AddressEmailPhoneType', with_headers=True)
     for i in s:
         print(i)
+    print('\n')
 
     # Count number of rows
     c = sql.count_rows_all()
-    print(c)
+    for table, count in c.items():
+        if count < 1:
+            print(table)
 
