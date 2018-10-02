@@ -252,7 +252,7 @@ class MySQL:
         self._printer(success, 'total successful commands')
 
         # Dump failed commands to text file
-        if len(fails) < 1:
+        if len(fails) > 1:
             # Re-add semi-colon separator
             fails = [com + ';' for com in fails]
             self._printer(len(fails), 'total failed commands')
