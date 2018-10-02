@@ -181,6 +181,12 @@ class MySQL:
         self._cursor.execute(statement)
         self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
 
+    def truncate_database(self):
+        """Drop all tables in a database."""
+        # Loop through each table and execute a drop command
+        return [self.drop_table(table) for table in
+                tqdm(self.tables, total=len(self.tables), desc='Truncating database')]
+
     # def create_table(self, table, data, headers=None):
     #     """Generate and execute a create table query by parsing a 2D dataset"""
     #     # TODO: Fix
@@ -202,13 +208,14 @@ class MySQL:
     #     self._printer(statement)
 
     def drop_table(self, table):
-        """Drop a table from the database."""
+        """Drop a table from a database."""
         self._cursor.execute('DROP TABLE ' + table)
         self._commit()
+        return table
 
     def drop_empty_tables(self):
         """Drop all empty tables in a database."""
-        # Count number of rows
+        # Count number of rows in each table
         counts = self.count_rows_all()
         drops = []
 
