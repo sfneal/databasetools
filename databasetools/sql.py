@@ -1,4 +1,5 @@
 from __future__ import print_function
+import os
 import mysql.connector
 from mysql.connector import errorcode
 
@@ -59,10 +60,10 @@ class MySQLTools:
                 print("Database does not exist")
             raise err
 
-    def _printer(self, msg):
+    def _printer(self, *msg):
         """Printing method for internal use."""
         if self.enable_printing:
-            print(msg)
+            print(*msg)
 
     def _close(self):
         """Close MySQL database connection."""
@@ -158,22 +159,55 @@ class MySQLTools:
         self._cursor.execute(statement)
         self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
 
-    def create_table(self, table, data, headers=None):
-        """Generate and execute a create table query by parsing a 2D dataset"""
-        # TODO: Fix
-        # Set headers list
-        if not headers:
-            headers = data[0]
+    # def create_table(self, table, data, headers=None):
+    #     """Generate and execute a create table query by parsing a 2D dataset"""
+    #     # TODO: Fix
+    #     # Set headers list
+    #     if not headers:
+    #         headers = data[0]
+    #
+    #     # Create dictionary columns and data types from headers list
+    #     data_types = {header: None for header in headers}
+    #
+    #     # Confirm that each row of the dataset is the same length
+    #     for row in data:
+    #         assert len(row) == len(headers)
+    #
+    #     # Create list of columns
+    #     columns = [header + ' ' + data_type for header, data_type in data_types]
+    #     self._printer(columns)
+    #     statement = "create table " + table + " ("
+    #     self._printer(statement)
 
-        # Create dictionary columns and data types from headers list
-        data_types = {header: None for header in headers}
+    def execute_sql_script(self, sql_script):
+        """Execute a sql file one command at a time."""
+        # Open and read the file as a single buffer
+        with open(sql_script, 'r') as fd:
+            sql_file = fd.read()
 
-        # Confirm that each row of the dataset is the same length
-        for row in data:
-            assert len(row) == len(headers)
+        # all SQL commands (split on ';')
+        # remove dbo. prefixes from table names
+        sql_commands = [com.replace("dbo.", '') for com in sql_file.split(';')]
+        self._printer(len(sql_commands), 'Total commands')
 
-        # Create list of columns
-        columns = [header + ' ' + data_type for header, data_type in data_types]
-        print(columns)
-        statement = "create table " + table + " ("
-        print(statement)
+        # Save failed commands to list
+        fails = []
+
+        # Execute every command from the input file
+        for count, command in enumerate(sql_commands):
+            # This will skip and report errors
+            # For example, if the tables do not yet exist, this will skip over
+            # the DROP TABLE commands
+            try:
+                self._cursor.execute(command)
+                self._commit()
+                self._printer(count, 'success')
+            except:
+                fails.append(command)
+                self._printer(count, 'fail')
+
+        # Write fail commands to a text file
+        fails = [com + ';' for com in fails]
+        self._printer(len(fails), 'total failed commands')
+        with open(os.path.join(os.path.dirname(sql_script), 'sql fails.txt')) as txt:
+            txt.writelines(fails)
