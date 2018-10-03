@@ -25,11 +25,34 @@ class CSV:
 
     def read(self):
         """Reads CSV file and returns list of contents"""
+        # Validate file path
         assert os.path.isfile(self.file_path), 'No such file exists: ' + str(self.file_path)
+
+        # Open CSV file and read contents
         with open(self.file_path, 'r') as f:
             reader = csv_builtin.reader(f)
-            data = list(reader)
+            loaded_data = list(reader)
+
+        # Force digits to become integers
+        return juggle_types(loaded_data)
+
+
+def juggle_types(data):
+    """Force all digits in a list to become integers."""
+    # Data is a list of lists (2D) and not a single column table (1D)
+    if isinstance(data[0], list):
+        return [[force_int(col) for col in row] for row in data]
+
+    # Data is 1D
+    elif isinstance(data, list):
+        return [force_int(i) for i in data]
+    else:
         return data
+
+
+def force_int(value):
+    """Force value to be an integer if it is a digit"""
+    return int(value) if str(value).isdigit() else value
 
 
 def resolve_path(file_path, calling_function):
