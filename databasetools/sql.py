@@ -370,6 +370,7 @@ class MySQL:
         return {table: self.count_rows(table) for table in self.tables}
 
 
+# TODO: Remove prior to 1.4 release
 class MySQLTools(MySQL):
     def __init__(self, config, enable_printing=True):
         """Wrapper class for MySQL"""
