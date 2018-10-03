@@ -34,7 +34,7 @@ class CSV:
 
 def resolve_path(file_path, calling_function):
     """
-    Conditionally set a file path.
+    Conditionally set a path to a CSV file.
 
     Option 1 - Join working directory and calling function name (file_name)
     Option 2 - Join working directory and provided file_path string
