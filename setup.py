@@ -19,6 +19,7 @@ setup(
     install_requires=[
         'mysql-connector>=2.1.6',
         'tqdm',
+        'differentiate',
     ],
     url='https://github.com/mrstephenneal/databasetools',
     license='MIT License',
