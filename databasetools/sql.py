@@ -27,7 +27,49 @@ def get_column_value_strings(columns, query_type='insert'):
 
 
 def join_columns(cols):
-    return ", ".join([i for i in cols])
+    """Join list of columns into a string for a SQL query"""
+    return ", ".join([i for i in cols]) if isinstance(cols, list) else cols
+
+
+def differentiate(x, y):
+    """
+    Retrieve a unique of list of elements that do not exist in both x and y.
+    Capable of parsing one-dimensional (flat) and two-dimensional (lists of lists) lists.
+
+    :param x: list #1
+    :param y: list #2
+    :return: list of unique values
+    """
+    # Validate both lists, confirm either are empty
+    if len(x) == 0 and len(y) > 0:
+        return y  # All y values are unique if x is empty
+    elif len(y) == 0 and len(x) > 0:
+        return x  # All x values are unique if y is empty
+
+    # Get the input type to convert back to before return
+    try:
+        input_type = type(x[0])
+    except IndexError:
+        input_type = type(y[0])
+
+    # Dealing with a 2D dataset (list of lists)
+    try:
+        # Immutable and Unique - Convert list of tuples into set of tuples
+        first_set = set(map(tuple, x))
+        secnd_set = set(map(tuple, y))
+
+    # Dealing with a 1D dataset (list of items)
+    except TypeError:
+        # Unique values only
+        first_set = set(x)
+        secnd_set = set(y)
+
+    # Determine which list is longest
+    longest = first_set if len(first_set) > len(secnd_set) else secnd_set
+    shortest = secnd_set if len(first_set) > len(secnd_set) else first_set
+
+    # Generate set of non-shared values and return list of values in original type
+    return [input_type(i) for i in {i for i in longest if i not in shortest}]
 
 
 class MySQL:
@@ -86,7 +128,7 @@ class MySQL:
         """Commit the changes made during the current connection."""
         self._cnx.commit()
 
-    def _fetch(self, statement):
+    def _fetch(self, statement, _print=False):
         """Execute a SQL query and return values."""
         # Execute statement
         self._cursor.execute(statement)
@@ -95,8 +137,9 @@ class MySQL:
             if len(row) == 1:
                 rows.append(row[0])
             else:
-                rows.append(row)
-        self._printer('\tMySQL rows successfully queried', len(rows))
+                rows.append(list(row))
+        if _print:
+            self._printer('\tMySQL rows successfully queried', len(rows))
 
         # Return a single item if the list only has one item
         if len(rows) == 1:
@@ -112,12 +155,12 @@ class MySQL:
         self._cursor.executemany(command)
         self._commit()
 
-    def select(self, table, cols):
+    def select(self, table, cols, _print=True):
         """Query only certain columns from a table and every row."""
         # Concatenate statement
         cols_str = join_columns(cols)
         statement = ("SELECT " + cols_str + " FROM " + str(table))
-        return self._fetch(statement)
+        return self._fetch(statement, _print)
 
     def select_where(self, table, cols, where):
         """Query certain columns from a table where a particular value is found."""
@@ -172,17 +215,76 @@ class MySQL:
             self._cursor.executemany(statement, values)
             self._printer('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
 
-    def update(self, table, columns, values, where):
-        """Update the values of a particular row where a value is met."""
-        where_col, where_val = where  # Unpack WHERE clause dictionary into tuple
-        cols = get_column_value_strings(columns, query_type='update')  # Get SET clause string
+    def insert_uniques(self, table, columns, values):
+        """
+        Insert multiple rows into a table that do not already exist.
+
+        If the rows primary key already exists, the rows values will be updated.
+        If the rows primary key does not exists, a new row will be inserted
+        """
+        # Rows that exist in the table
+        existing_rows = self.select(table, columns)
+
+        # Rows that DO NOT exist in the table
+        unique = differentiate(existing_rows, values)
+
+        # Keys that exist in the table
+        keys = self.get_primary_key_values(table)
+
+        # Primary key's column index
+        pk_col = self.get_primary_key(table)
+        pk_index = columns.index(pk_col)
+
+        # Split list of unique rows into list of rows to update and rows to insert
+        to_insert, to_update = [], []
+        for index, row in enumerate(unique):
+            # Primary key is not in list of pk values, insert new row
+            if row[pk_index] not in keys:
+                to_insert.append(unique[index])
+
+            # Primary key exists, update row rather than insert
+            elif row[pk_index] in keys:
+                to_update.append(unique[index])
+
+        # Insert new rows
+        if len(to_insert) > 0:
+            self.insert_many(table, columns, to_insert)
+
+        # Update existing rows
+        if len(to_update) > 0:
+            self.update_many(table, columns, to_update, pk_col, 0)
+
+    @staticmethod
+    def _update_statement(table, columns, where):
+        """Generate a SQL update statement."""
+        # Unpack WHERE clause dictionary into tuple
+        where_col, where_val = where
+
+        # Create column string from list of values
+        cols = get_column_value_strings(columns, query_type='update')
 
         # Concatenate statement
-        statement = ("UPDATE " + str(table) + " SET " + str(cols) + ' WHERE ' + str(where_col) + '=' + str(where_val))
+        return "UPDATE " + str(table) + " SET " + str(cols) + ' WHERE ' + str(where_col) + '=' + str(where_val)
+
+    def update(self, table, columns, values, where):
+        """
+        Update the values of a particular row where a value is met.
+
+        :param table: table name
+        :param columns: column(s) to update
+        :param values: updated values
+        :param where: tuple, (where_column, where_value)
+        """
+        statement = self._update_statement(table, columns, where)
 
         # Execute statement
         self._cursor.execute(statement, values)
-        self._printer('\tMySQL rows (' + str(len(values)) + ') successfully UPDATED')
+        self._printer('\tMySQL cols (' + str(len(values)) + ') successfully UPDATED')
+
+    def update_many(self, table, columns, values, where_col, where_index):
+        """Update the values of several rows."""
+        for row in values:
+            self.update(table, columns, row, (where_col, row[where_index]))
 
     def truncate(self, table):
         """Empty a table by deleting all of its rows."""
@@ -286,17 +388,26 @@ class MySQL:
 
         # If with_headers is True, insert headers to first row before returning
         if with_headers:
-            f.insert(0, ('Type', 'Null', 'Key', 'Default', 'Extra'))
+            f.insert(0, ['Column', 'Type', 'Null', 'Key', 'Default', 'Extra'])
         return f
+
+    def get_primary_key(self, table):
+        """Retrieve the column which is the primary key for a table."""
+        for column in self.get_schema(table):
+            if 'pri' in column[3].lower():
+                return column[0]
+
+    def get_primary_key_values(self, table):
+        """Retrieve a list of primary key values in a table"""
+        return self.select(table, self.get_primary_key(table), _print=False)
 
     def count_rows(self, table):
         """Get the number of rows in a particular table"""
         statement = 'SELECT COUNT(*) FROM ' + table
-        return self._fetch(statement)
+        return self._fetch(statement, _print=False)
 
     def count_rows_all(self):
         """Get the number of rows for every table in the database."""
-        self.enable_printing = False
         return {table: self.count_rows(table) for table in self.tables}
 
 
