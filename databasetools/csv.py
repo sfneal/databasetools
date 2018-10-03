@@ -5,11 +5,7 @@ import inspect
 
 class CSV:
     def __init__(self, file_path=None):
-        # Set file path and name
-        if file_path is None:
-            self.file_path = os.path.join(os.getcwd(), get_calling_file())
-        else:
-            self.file_path = file_path
+        self.file_path = resolve_path(file_path, get_calling_file())
 
     def write(self, data, method='w'):
         """
@@ -18,10 +14,6 @@ class CSV:
         :param data: Either a list of tuples or a list of lists.
         :param method: File opening method.
         """
-        # Add .csv file extension
-        if not self.file_path.endswith('.csv'):
-            self.file_path = self.file_path + '.csv'
-
         with open(self.file_path, method) as write:
             wr = csv_builtin.writer(write)
             wr.writerows(data)
@@ -38,6 +30,36 @@ class CSV:
             reader = csv_builtin.reader(f)
             data = list(reader)
         return data
+
+
+def resolve_path(file_path, calling_function):
+    """
+    Conditionally set a file path.
+
+    Option 1 - Join working directory and calling function name (file_name)
+    Option 2 - Join working directory and provided file_path string
+    Option 3 - Return provided file_path
+
+    :param file_path: None, filename string or Full file path
+    :param calling_function: Name of the function that initialized the CSV class
+    :return:
+    """
+    # No file_path is provided
+    if not file_path:
+        resolved = os.path.join(os.getcwd(), calling_function)
+
+    # String provided that does not a '/', we can assume this is not a path
+    elif file_path.count(os.sep) == 0:
+        resolved = os.path.join(os.getcwd(), file_path)
+
+    # Valid file_path is provided
+    else:
+        resolved = file_path
+
+    # Add .csv file extension
+    if not resolved.endswith('.csv'):
+        resolved = resolved + '.csv'
+    return resolved
 
 
 def get_calling_file(file_path=None, result='name'):
