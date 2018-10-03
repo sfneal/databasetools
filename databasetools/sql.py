@@ -403,8 +403,7 @@ class MySQL:
 
     def count_rows(self, table):
         """Get the number of rows in a particular table"""
-        statement = 'SELECT COUNT(*) FROM ' + table
-        return self._fetch(statement, _print=False)
+        return self.select(table, 'COUNT(*)', False)
 
     def count_rows_all(self):
         """Get the number of rows for every table in the database."""
