@@ -243,6 +243,16 @@ class MySQL:
         self.execute(statement)
         self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
 
+    def truncate_database(self):
+        """Drop all tables in a database."""
+        # Get list of tables
+        tables = self.tables if isinstance(self.tables, list) else [self.tables]
+        if len(tables) > 0:
+            # Join list of tables into comma separated string
+            tables_str = ', '.join([wrap(table) for table in tables])
+            self.execute('DROP TABLE ' + tables_str)
+        return tables
+
     def drop_table(self, table):
         """Drop a table from a database."""
         self.execute('DROP TABLE ' + wrap(table))
@@ -306,16 +316,6 @@ class MySQL:
         """Update the values of several rows."""
         for row in values:
             self.update(table, columns, row, (where_col, row[where_index]))
-
-    def truncate_database(self):
-        """Drop all tables in a database."""
-        # Get list of tables
-        tables = self.tables if isinstance(self.tables, list) else [self.tables]
-        if len(tables) > 0:
-            # Join list of tables into comma separated string
-            tables_str = ', '.join([wrap(table) for table in tables])
-            self.execute('DROP TABLE ' + tables_str)
-        return tables
 
     # def create_table(self, table, data, headers=None):
     #     """Generate and execute a create table query by parsing a 2D dataset"""
