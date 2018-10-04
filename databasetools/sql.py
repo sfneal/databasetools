@@ -251,6 +251,7 @@ class MySQL:
             # Join list of tables into comma separated string
             tables_str = ', '.join([wrap(table) for table in tables])
             self.execute('DROP TABLE ' + tables_str)
+            self._printer(len(tables), 'tables truncated')
         return tables
 
     def drop_table(self, table):
