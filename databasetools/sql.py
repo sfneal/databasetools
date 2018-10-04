@@ -334,12 +334,20 @@ class MySQL:
             fails = [com + ';\n' for com in fails]
             self._printer(len(fails), 'total failed commands')
 
+            # Create a directory to save fail SQL scripts
+            fails_dir = os.path.join(os.path.dirname(sql_script), 'fails')
+            if not os.path.exists(fails_dir):
+                os.mkdir(fails_dir)
+
             # Dump failed commands to text file in the same directory as the script
-            txt_file = os.path.join(os.path.dirname(sql_script),
-                                    str(os.path.basename(sql_script).strip('_fails').rsplit('.')[0]) + '_fails.sql')
-            self._printer('Fail commands dumped to', txt_file)
-            with open(txt_file, 'w') as txt:
-                txt.writelines(fails)
+            for count, fail in enumerate(fails):
+                fails_fname = str(os.path.basename(sql_script).strip('_fails').rsplit('.')[0]) + str(count) + '.sql'
+                txt_file = os.path.join(fails_dir, fails_fname)
+
+                # Dump to text file
+                self._printer('Fail commands dumped to', txt_file)
+                with open(txt_file, 'w') as txt:
+                    txt.writelines(fail)
 
     def get_schema(self, table, with_headers=False):
         """Retrieve the database schema for a particular table."""
