@@ -406,7 +406,7 @@ class MySQL:
                 os.mkdir(fails_dir)
 
             # Dump failed commands to text file in the same directory as the script
-            for count, fail in enumerate(fails):
+            for count, fail in tqdm(enumerate(fails), total=len(fails), desc='Dumping failed SQL commands to text'):
                 fails_fname = str(os.path.basename(sql_script).rsplit('.')[0]) + str(count) + '.sql'
                 txt_file = os.path.join(fails_dir, fails_fname)
 
