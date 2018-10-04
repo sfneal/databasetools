@@ -248,7 +248,7 @@ class MySQL:
         existing_rows = self.select(table, columns)
 
         # Rows that DO NOT exist in the table
-        unique = differentiate(existing_rows, values)
+        unique = differentiate(existing_rows, values)  # Get values that are not in existing_rows
 
         # Keys that exist in the table
         keys = self.get_primary_key_values(table)
