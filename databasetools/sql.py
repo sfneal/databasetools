@@ -394,14 +394,17 @@ class MySQL:
             self._printer(len(fails), 'total failed commands')
 
             # Create a directory to save fail SQL scripts
-            fails_folder = 'fails ' + datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H-%M-%S')
-            fails_dir = os.path.join(os.path.dirname(sql_script), fails_folder)
+            fails_dir = os.path.join(os.path.dirname(sql_script), 'fails')
+            if not os.path.exists(fails_dir):
+                os.mkdir(fails_dir)
+
+            fails_dir = os.path.join(fails_dir, datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H-%M-%S'))
             if not os.path.exists(fails_dir):
                 os.mkdir(fails_dir)
 
             # Dump failed commands to text file in the same directory as the script
             for count, fail in enumerate(fails):
-                fails_fname = str(os.path.basename(sql_script).strip('_fails').rsplit('.')[0]) + str(count) + '.sql'
+                fails_fname = str(os.path.basename(sql_script).rsplit('.')[0]) + str(count) + '.sql'
                 txt_file = os.path.join(fails_dir, fails_fname)
 
                 # Dump to text file
