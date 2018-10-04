@@ -370,7 +370,7 @@ class MySQL:
             self._printer(len(fails), 'total failed commands')
 
             # Create a directory to save fail SQL scripts
-            fails_folder = 'fails' + datetime.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S')
+            fails_folder = 'fails ' + datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H:%M:%S')
             fails_dir = os.path.join(os.path.dirname(sql_script), fails_folder)
             if not os.path.exists(fails_dir):
                 os.mkdir(fails_dir)
