@@ -285,13 +285,12 @@ class MySQL:
 
     def truncate_database(self):
         """Drop all tables in a database."""
-        self.enable_printing = False
         # Get list of tables
         tables = self.tables if isinstance(self.tables, list) else [self.tables]
+        tables_str = ', '.join([wrap(table) for table in tables])
 
-        # Loop through each table and execute a drop command
-        return [self.drop_table(table) for table in
-                tqdm(tables, total=len(tables), desc='Truncating database')]
+        self.execute('DROP TABLE ' + tables_str)
+        return tables
 
     # def create_table(self, table, data, headers=None):
     #     """Generate and execute a create table query by parsing a 2D dataset"""
