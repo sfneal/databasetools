@@ -34,7 +34,7 @@ def join_columns(cols):
 
 def wrap(item):
     """Wrap a string with `` characters for SQL queries."""
-    return '`' + item + '`'
+    return '`' + str(item) + '`'
 
 
 class MySQL:
@@ -66,6 +66,9 @@ class MySQL:
         """Retrieve a list of databases that are accessible under the current connection"""
         return self._fetch('show databases')
 
+    # ------------------------------------------------------------------------------
+    # |                            HELPER METHODS                                  |
+    # ------------------------------------------------------------------------------
     def _connect(self, config):
         """Establish a connection with a MySQL database."""
         try:
@@ -119,12 +122,18 @@ class MySQL:
     def executemany(self, command):
         self._cursor.executemany(command)
         self._commit()
+    # ------------------------------------------------------------------------------
+    # |                            END HELPER METHODS                              |
+    # ------------------------------------------------------------------------------
 
+    # ------------------------------------------------------------------------------
+    # |                 METHODS THAT CONCATENATE SQL QUERIES                       |
+    # ------------------------------------------------------------------------------
     def select(self, table, cols, _print=True):
         """Query only certain columns from a table and every row."""
         # Concatenate statement
         cols_str = join_columns(cols)
-        statement = ("SELECT " + cols_str + " FROM " + str(table))
+        statement = "SELECT " + cols_str + " FROM " + wrap(table)
         return self._fetch(statement, _print)
 
     def select_where(self, table, cols, where):
@@ -138,13 +147,13 @@ class MySQL:
         # Unpack WHERE clause dictionary into tuple
         where_col, where_val = where
 
-        statement = ("SELECT " + cols_str + " FROM " + str(table) + ' WHERE ' + str(where_col) + '=' + str(where_val))
+        statement = ("SELECT " + cols_str + " FROM " + wrap(table) + ' WHERE ' + str(where_col) + '=' + str(where_val))
         self._fetch(statement)
 
     def select_all(self, table):
         """Query all rows and columns from a table."""
         # Concatenate statement
-        statement = ("SELECT * FROM " + str(table))
+        statement = "SELECT * FROM " + wrap(table)
         return self._fetch(statement)
 
     def select_all_join(self, table1, table2, key):
@@ -156,7 +165,7 @@ class MySQL:
         """Insert a singular row into a table"""
         # Concatenate statement
         cols, vals = get_column_value_strings(columns)
-        statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
+        statement = "INSERT INTO " + wrap(table) + "(" + cols + ") " + "VALUES (" + vals + ")"
 
         # Execute statement
         self.execute(statement, values)
@@ -174,12 +183,60 @@ class MySQL:
         else:
             # Concatenate statement
             cols, vals = get_column_value_strings(columns)
-            statement = ("INSERT INTO " + str(table) + "(" + cols + ") " + "VALUES (" + vals + ")")
+            statement = "INSERT INTO " + wrap(table) + "(" + cols + ") " + "VALUES (" + vals + ")"
 
             # Execute statement
             self._cursor.executemany(statement, values)
             self._printer('\tMySQL rows (' + str(len(values)) + ') successfully INSERTED')
 
+    def update(self, table, columns, values, where):
+        """
+        Update the values of a particular row where a value is met.
+
+        :param table: table name
+        :param columns: column(s) to update
+        :param values: updated values
+        :param where: tuple, (where_column, where_value)
+        """
+        # Unpack WHERE clause dictionary into tuple
+        where_col, where_val = where
+
+        # Create column string from list of values
+        cols = get_column_value_strings(columns, query_type='update')
+
+        # Concatenate statement
+        statement = "UPDATE " + str(table) + " SET " + str(cols) + ' WHERE ' + str(where_col) + '=' + str(where_val)
+
+        # Execute statement
+        self._cursor.execute(statement, values)
+        self._printer('\tMySQL cols (' + str(len(values)) + ') successfully UPDATED')
+
+    def truncate(self, table):
+        """Empty a table by deleting all of its rows."""
+        statement = "TRUNCATE " + wrap(table)
+        self.execute(statement)
+        self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
+
+    def drop_table(self, table):
+        """Drop a table from a database."""
+        self.execute('DROP TABLE ' + wrap(table))
+        return table
+
+    def get_schema(self, table, with_headers=False):
+        """Retrieve the database schema for a particular table."""
+        f = self._fetch('desc ' + wrap(table))
+
+        # If with_headers is True, insert headers to first row before returning
+        if with_headers:
+            f.insert(0, ['Column', 'Type', 'Null', 'Key', 'Default', 'Extra'])
+        return f
+    # ------------------------------------------------------------------------------
+    # |                 END METHODS THAT CONCATENATE SQL QUERIES                   |
+    # ------------------------------------------------------------------------------
+
+    # ------------------------------------------------------------------------------
+    # |                 METHODS THAT UTILIZE CONCAT METHODS                        |
+    # ------------------------------------------------------------------------------
     def insert_uniques(self, table, columns, values):
         """
         Insert multiple rows into a table that do not already exist.
@@ -219,43 +276,10 @@ class MySQL:
         if len(to_update) > 0:
             self.update_many(table, columns, to_update, pk_col, 0)
 
-    @staticmethod
-    def _update_statement(table, columns, where):
-        """Generate a SQL update statement."""
-        # Unpack WHERE clause dictionary into tuple
-        where_col, where_val = where
-
-        # Create column string from list of values
-        cols = get_column_value_strings(columns, query_type='update')
-
-        # Concatenate statement
-        return "UPDATE " + str(table) + " SET " + str(cols) + ' WHERE ' + str(where_col) + '=' + str(where_val)
-
-    def update(self, table, columns, values, where):
-        """
-        Update the values of a particular row where a value is met.
-
-        :param table: table name
-        :param columns: column(s) to update
-        :param values: updated values
-        :param where: tuple, (where_column, where_value)
-        """
-        statement = self._update_statement(table, columns, where)
-
-        # Execute statement
-        self._cursor.execute(statement, values)
-        self._printer('\tMySQL cols (' + str(len(values)) + ') successfully UPDATED')
-
     def update_many(self, table, columns, values, where_col, where_index):
         """Update the values of several rows."""
         for row in values:
             self.update(table, columns, row, (where_col, row[where_index]))
-
-    def truncate(self, table):
-        """Empty a table by deleting all of its rows."""
-        statement = "TRUNCATE " + str(table)
-        self.execute(statement)
-        self._printer('\tMySQL table ' + str(table) + ' successfully truncated')
 
     def truncate_database(self):
         """Drop all tables in a database."""
@@ -284,11 +308,6 @@ class MySQL:
     #     statement = "create table " + table + " ("
     #     self._printer(statement)
 
-    def drop_table(self, table):
-        """Drop a table from a database."""
-        self.execute('DROP TABLE `' + table + '`')
-        return table
-
     def drop_empty_tables(self):
         """Drop all empty tables in a database."""
         # Count number of rows in each table
@@ -303,7 +322,13 @@ class MySQL:
                 self._printer('Dropped table', table)
                 drops.append(table)
         return drops
+    # ------------------------------------------------------------------------------
+    # |                 END METHODS THAT UTILIZE CONCAT METHODS                    |
+    # ------------------------------------------------------------------------------
 
+    # ------------------------------------------------------------------------------
+    #                               STANDALONE METHODS                             |
+    # ------------------------------------------------------------------------------
     def execute_sql_script(self, sql_script):
         """Execute a sql file one command at a time."""
         # Open and read the file as a single buffer
@@ -354,16 +379,13 @@ class MySQL:
                 with open(txt_file, 'w') as txt:
                     txt.writelines(fail)
 
-    def get_schema(self, table, with_headers=False):
-        """Retrieve the database schema for a particular table."""
-        statement = 'desc ' + table
-        f = self._fetch(statement)
+    # ------------------------------------------------------------------------------
+    #                             END STANDALONE METHODS                           |
+    # ------------------------------------------------------------------------------
 
-        # If with_headers is True, insert headers to first row before returning
-        if with_headers:
-            f.insert(0, ['Column', 'Type', 'Null', 'Key', 'Default', 'Extra'])
-        return f
-
+    # ------------------------------------------------------------------------------
+    #                                GETTER METHODS                                |
+    # ------------------------------------------------------------------------------
     def get_primary_key(self, table):
         """Retrieve the column which is the primary key for a table."""
         for column in self.get_schema(table):
@@ -381,6 +403,9 @@ class MySQL:
     def count_rows_all(self):
         """Get the number of rows for every table in the database."""
         return {table: self.count_rows(table) for table in self.tables}
+    # ------------------------------------------------------------------------------
+    #                                END GETTER METHODS                            |
+    # ------------------------------------------------------------------------------
 
 
 # TODO: Remove prior to 1.4 release
