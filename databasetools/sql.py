@@ -32,6 +32,11 @@ def join_columns(cols):
     return ", ".join([i for i in cols]) if isinstance(cols, list) else cols
 
 
+def wrap(item):
+    """Wrap a string with `` characters for SQL queries."""
+    return '`' + item + '`'
+
+
 class MySQL:
     def __init__(self, config, enable_printing=True):
         """
@@ -281,7 +286,7 @@ class MySQL:
 
     def drop_table(self, table):
         """Drop a table from a database."""
-        self.execute('DROP TABLE ' + table)
+        self.execute('DROP TABLE `' + table + '`')
         return table
 
     def drop_empty_tables(self):
