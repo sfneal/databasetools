@@ -287,9 +287,10 @@ class MySQL:
         """Drop all tables in a database."""
         # Get list of tables
         tables = self.tables if isinstance(self.tables, list) else [self.tables]
-        tables_str = ', '.join([wrap(table) for table in tables])
-
-        self.execute('DROP TABLE ' + tables_str)
+        if len(tables) > 0:
+            # Join list of tables into comma separated string
+            tables_str = ', '.join([wrap(table) for table in tables])
+            self.execute('DROP TABLE ' + tables_str)
         return tables
 
     # def create_table(self, table, data, headers=None):
