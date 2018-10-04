@@ -57,6 +57,9 @@ class MySQL:
         self._commit()
         self._close()
 
+    # ------------------------------------------------------------------------------
+    #                                GETTER METHODS                                |
+    # ------------------------------------------------------------------------------
     @property
     def tables(self):
         """Retrieve a list of tables in the connected database"""
@@ -67,6 +70,27 @@ class MySQL:
     def databases(self):
         """Retrieve a list of databases that are accessible under the current connection"""
         return self._fetch('show databases')
+
+    def get_primary_key(self, table):
+        """Retrieve the column which is the primary key for a table."""
+        for column in self.get_schema(table):
+            if 'pri' in column[3].lower():
+                return column[0]
+
+    def get_primary_key_values(self, table):
+        """Retrieve a list of primary key values in a table"""
+        return self.select(table, self.get_primary_key(table), _print=False)
+
+    def count_rows(self, table):
+        """Get the number of rows in a particular table"""
+        return self.select(table, 'COUNT(*)', False)
+
+    def count_rows_all(self):
+        """Get the number of rows for every table in the database."""
+        return {table: self.count_rows(table) for table in self.tables}
+    # ------------------------------------------------------------------------------
+    #                                END GETTER METHODS                            |
+    # ------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------
     # |                            HELPER METHODS                                  |
@@ -386,30 +410,6 @@ class MySQL:
                     txt.writelines(fail)
     # ------------------------------------------------------------------------------
     #                             END STANDALONE METHODS                           |
-    # ------------------------------------------------------------------------------
-
-    # ------------------------------------------------------------------------------
-    #                                GETTER METHODS                                |
-    # ------------------------------------------------------------------------------
-    def get_primary_key(self, table):
-        """Retrieve the column which is the primary key for a table."""
-        for column in self.get_schema(table):
-            if 'pri' in column[3].lower():
-                return column[0]
-
-    def get_primary_key_values(self, table):
-        """Retrieve a list of primary key values in a table"""
-        return self.select(table, self.get_primary_key(table), _print=False)
-
-    def count_rows(self, table):
-        """Get the number of rows in a particular table"""
-        return self.select(table, 'COUNT(*)', False)
-
-    def count_rows_all(self):
-        """Get the number of rows for every table in the database."""
-        return {table: self.count_rows(table) for table in self.tables}
-    # ------------------------------------------------------------------------------
-    #                                END GETTER METHODS                            |
     # ------------------------------------------------------------------------------
 
 
