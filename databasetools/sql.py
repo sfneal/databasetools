@@ -422,7 +422,7 @@ def split_sql_commands(text):
     results = []
     current = ''
     state = None
-    for c in tqdm(text, total=len(text)):
+    for c in tqdm(text, total=len(text), desc='Parsing SQL script file', unit='chars'):
         if state is None:  # default state, outside of special entity
             current += c
             if c in '"\'':
