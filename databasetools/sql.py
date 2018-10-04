@@ -405,7 +405,6 @@ class MySQL:
                 txt_file = os.path.join(fails_dir, fails_fname)
 
                 # Dump to text file
-                self._printer('Fail commands dumped to', txt_file)
                 with open(txt_file, 'w') as txt:
                     txt.writelines(fail)
     # ------------------------------------------------------------------------------
