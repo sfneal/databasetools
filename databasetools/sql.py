@@ -1,4 +1,6 @@
 import os
+from time import time
+from datetime import datetime
 import mysql.connector
 from mysql.connector import errorcode
 from tqdm import tqdm
@@ -284,9 +286,12 @@ class MySQL:
     def truncate_database(self):
         """Drop all tables in a database."""
         self.enable_printing = False
+        # Get list of tables
+        tables = self.tables if isinstance(self.tables, list) else [self.tables]
+
         # Loop through each table and execute a drop command
         return [self.drop_table(table) for table in
-                tqdm(self.tables, total=len(self.tables), desc='Truncating database')]
+                tqdm(tables, total=len(tables), desc='Truncating database')]
 
     # def create_table(self, table, data, headers=None):
     #     """Generate and execute a create table query by parsing a 2D dataset"""
@@ -365,7 +370,8 @@ class MySQL:
             self._printer(len(fails), 'total failed commands')
 
             # Create a directory to save fail SQL scripts
-            fails_dir = os.path.join(os.path.dirname(sql_script), 'fails')
+            fails_folder = 'fails' + datetime.fromtimestamp(time.time).strftime('%Y-%m-%d %H:%M:%S')
+            fails_dir = os.path.join(os.path.dirname(sql_script), fails_folder)
             if not os.path.exists(fails_dir):
                 os.mkdir(fails_dir)
 
@@ -378,7 +384,6 @@ class MySQL:
                 self._printer('Fail commands dumped to', txt_file)
                 with open(txt_file, 'w') as txt:
                     txt.writelines(fail)
-
     # ------------------------------------------------------------------------------
     #                             END STANDALONE METHODS                           |
     # ------------------------------------------------------------------------------
