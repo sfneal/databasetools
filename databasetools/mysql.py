@@ -359,63 +359,90 @@ class MySQL:
     # ------------------------------------------------------------------------------
     #                               STANDALONE METHODS                             |
     # ------------------------------------------------------------------------------
-    def execute_sql_script(self, sql_script):
+    def execute_script(self, sql_script, commands=None):
+        """Wrapper method for ExecuteScript class."""
+        ExecuteScript(self.execute, sql_script, commands)
+    # ------------------------------------------------------------------------------
+    #                             END STANDALONE METHODS                           |
+    # ------------------------------------------------------------------------------
+
+
+class ExecuteScript:
+    def __init__(self, execute_method, sql_script, commands=None):
         """Execute a sql file one command at a time."""
+        print('Initializing')
+        # Inherit execute method from MySQL
+        self.execute = execute_method
+
+        # SQL script to be executed
+        self.sql_script = sql_script
+
+        # Retrieve commands from sql_script if no commands are provided
+        self.commands = self._get_commands(sql_script) if not commands else commands
+
+        # Save failed commands to list
+        self.fail = []
+        self.success = 0
+
+    def __call__(self, *args, **kwargs):
+        self._run()
+
+    def _run(self):
+        print('Running')
+        # Execute commands
+        self.execute()
+
+        # Dump failed commands to text file
+        if len(self.fail) > 1:
+            self.dump_fails()
+
+    @staticmethod
+    def _get_commands(sql_script):
         # Open and read the file as a single buffer
         with open(sql_script, 'r') as fd:
             sql_file = fd.read()
 
         # all SQL commands (split on ';')
         # remove dbo. prefixes from table names
-        sql_commands = [com.replace("dbo.", '') for com in sql_file.split(';')]
-        self._printer(len(sql_commands), 'Total commands (sql_file.split(";"))')
-        sql_commands = [com.replace("dbo.", '') for com in split_sql_commands(sql_file)]
-        self._printer(len(sql_commands), 'Total commands (split_sql_commands)')
+        return [com.replace("dbo.", '') for com in split_sql_commands(sql_file)]
 
-        # Save failed commands to list
-        fails = []
-        success = 0
-
+    def execute(self):
         # Execute every command from the input file
-        for command in tqdm(sql_commands, total=len(sql_commands), desc='Executing SQL Commands'):
+        print('Total commands: ', len(self.commands))
+        for command in tqdm(self.commands, total=len(self.commands), desc='Executing SQL Commands'):
             # This will skip and report errors
             # For example, if the tables do not yet exist, this will skip over
             # the DROP TABLE commands
             try:
                 self.execute(command)
-                success += 1
+                self.success += 1
             except:
-                fails.append(command)
+                self.fail.append(command)
 
         # Write fail commands to a text file
-        self._printer(success, 'total successful commands')
+        print(self.success, 'total successful commands')
 
-        # Dump failed commands to text file
-        if len(fails) > 1:
-            # Re-add semi-colon separator
-            fails = [com + ';\n' for com in fails]
-            self._printer(len(fails), 'total failed commands')
+    def dump_fails(self):
+        # Re-add semi-colon separator
+        fails = [com + ';\n' for com in self.fail]
+        print(len(fails), 'total failed commands')
 
-            # Create a directory to save fail SQL scripts
-            fails_dir = os.path.join(os.path.dirname(sql_script), 'fails')
-            if not os.path.exists(fails_dir):
-                os.mkdir(fails_dir)
+        # Create a directory to save fail SQL scripts
+        fails_dir = os.path.join(os.path.dirname(self.sql_script), 'fails')
+        if not os.path.exists(fails_dir):
+            os.mkdir(fails_dir)
+        fails_dir = os.path.join(fails_dir, datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H-%M-%S'))
+        if not os.path.exists(fails_dir):
+            os.mkdir(fails_dir)
 
-            fails_dir = os.path.join(fails_dir, datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H-%M-%S'))
-            if not os.path.exists(fails_dir):
-                os.mkdir(fails_dir)
+        # Dump failed commands to text file in the same directory as the script
+        for count, fail in tqdm(enumerate(fails), total=len(fails), desc='Dumping failed SQL commands to text'):
+            fails_fname = str(os.path.basename(self.sql_script).rsplit('.')[0]) + str(count) + '.sql'
+            txt_file = os.path.join(fails_dir, fails_fname)
 
-            # Dump failed commands to text file in the same directory as the script
-            for count, fail in tqdm(enumerate(fails), total=len(fails), desc='Dumping failed SQL commands to text'):
-                fails_fname = str(os.path.basename(sql_script).rsplit('.')[0]) + str(count) + '.sql'
-                txt_file = os.path.join(fails_dir, fails_fname)
-
-                # Dump to text file
-                with open(txt_file, 'w') as txt:
-                    txt.writelines(fail)
-    # ------------------------------------------------------------------------------
-    #                             END STANDALONE METHODS                           |
-    # ------------------------------------------------------------------------------
+            # Dump to text file
+            with open(txt_file, 'w') as txt:
+                txt.writelines(fail)
 
 
 def split_sql_commands(text):
