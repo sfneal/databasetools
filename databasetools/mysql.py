@@ -404,7 +404,7 @@ class MySQL:
 
         def execute_commands(self):
             # Execute every command from the input file
-            print('\t', len(self.commands), 'commands')
+            print('\t' + str(len(self.commands)), 'commands')
             for command in tqdm(self.commands, total=len(self.commands), desc='Executing SQL Commands'):
                 # This will skip and report errors
                 # For example, if the tables do not yet exist, this will skip over
@@ -416,7 +416,7 @@ class MySQL:
                     self.fail.append(command)
 
             # Write fail commands to a text file
-            print('\t', self.success, 'successful commands')
+            print('\t' + str(self.success), 'successful commands')
 
         def dump_fails(self):
             # Re-add semi-colon separator
