@@ -367,8 +367,9 @@ class MySQL:
     # ------------------------------------------------------------------------------
     def execute_script(self, sql_script, commands=None):
         """Wrapper method for ExecuteScript class."""
-        print('\tExecuting script')
+        print('\tSTART Executing SQL script')
         self.ExecuteScript(sql_script, commands)
+        print('\tEND Executing SQL script')
 
     class ExecuteScript:
         def __init__(self, sql_script, commands=None):
