@@ -381,11 +381,6 @@ class MySQL:
             self.fail = []
             self.success = 0
 
-        def __call__(self, *args, **kwargs):
-            self.run()
-            print('Ran')
-
-        def run(self):
             print('Running')
             # Execute commands
             self.execute()
@@ -396,6 +391,7 @@ class MySQL:
 
         @staticmethod
         def _get_commands(sql_script):
+            print('Getting commands')
             # Open and read the file as a single buffer
             with open(sql_script, 'r') as fd:
                 sql_file = fd.read()
