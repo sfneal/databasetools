@@ -430,13 +430,12 @@ class ExecuteScript:
 
         # Create a directory to save fail SQL scripts
         fails_dir = os.path.join(os.path.dirname(self.sql_script), 'fails')
-        print(fails_dir)
         if not os.path.exists(fails_dir):
             os.mkdir(fails_dir)
         fails_dir = os.path.join(fails_dir, datetime.fromtimestamp(time()).strftime('%Y-%m-%d %H-%M-%S'))
         if not os.path.exists(fails_dir):
             os.mkdir(fails_dir)
-        print(fails_dir)
+        print('\tDrumping failed commands to', fails_dir)
 
         # Dump failed commands to text file in the same directory as the script
         for count, fail in tqdm(enumerate(fails), total=len(fails), desc='Dumping failed SQL commands to text'):
