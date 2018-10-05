@@ -384,7 +384,7 @@ class MySQL:
             self.success = 0
 
             # Execute commands
-            self.execute()
+            self.execute_commands()
 
             # Dump failed commands to text file
             if len(self.fail) > 1:
@@ -401,9 +401,9 @@ class MySQL:
             # remove dbo. prefixes from table names
             return [com.replace("dbo.", '') for com in split_sql_commands(sql_file)]
 
-        def execute(self):
+        def execute_commands(self):
             # Execute every command from the input file
-            print('\tTotal commands: ', len(self.commands))
+            print('\t', len(self.commands), 'commands')
             for command in tqdm(self.commands, total=len(self.commands), desc='Executing SQL Commands'):
                 # This will skip and report errors
                 # For example, if the tables do not yet exist, this will skip over
@@ -415,12 +415,12 @@ class MySQL:
                     self.fail.append(command)
 
             # Write fail commands to a text file
-            print(self.success, '\ttotal successful commands')
+            print('\t', self.success, 'successful commands')
 
         def dump_fails(self):
             # Re-add semi-colon separator
             fails = [com + ';\n' for com in self.fail]
-            print('\t' + str(len(fails)), 'total failed commands')
+            print('\t' + str(len(fails)), 'failed commands')
 
             # Create a directory to save fail SQL scripts
             fails_dir = os.path.join(os.path.dirname(self.sql_script), 'fails')
