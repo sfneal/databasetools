@@ -56,8 +56,12 @@ class MySQL:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         print('\tMySQL disconnecting')
-        self._commit()
-        self._close()
+        try:
+            self._commit()
+            self._close()
+        except mysql.connector.errors.InterfaceError as e:
+            print('\t' + str(e))
+            print('\tMySQL disconnected')
 
     # ------------------------------------------------------------------------------
     #                                GETTER METHODS                                |
