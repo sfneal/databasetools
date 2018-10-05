@@ -107,10 +107,7 @@ class MySQL:
             self._printer('\tMySQL rows successfully queried', len(rows))
 
         # Return a single item if the list only has one item
-        if len(rows) == 1:
-            return rows[0]
-        else:
-            return rows
+        return rows[0] if len(rows) == 1 else rows
 
     def execute(self, command):
         self._cursor.execute(command)
