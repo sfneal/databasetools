@@ -51,9 +51,11 @@ class MySQL:
         self._connect(config)
 
     def __enter__(self):
+        print('\tMySQL connecting')
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        print('\tMySQL disconnecting')
         self._commit()
         self._close()
 
