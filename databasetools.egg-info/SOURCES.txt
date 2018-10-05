@@ -6,9 +6,9 @@ databasetools/_version.py
 databasetools/csv.py
 databasetools/dict.py
 databasetools/json.py
+databasetools/mysql.py
 databasetools/php.py
 databasetools/pickle.py
-databasetools/sql.py
 databasetools/sqlite.py
 databasetools/sqlprep.py
 databasetools.egg-info/PKG-INFO
