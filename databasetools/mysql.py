@@ -373,8 +373,6 @@ class MySQL:
     class ExecuteScript:
         def __init__(self, sql_script, commands=None):
             """Execute a sql file one command at a time."""
-            print('Initializing')
-
             # SQL script to be executed
             self.sql_script = sql_script
 
@@ -385,7 +383,6 @@ class MySQL:
             self.fail = []
             self.success = 0
 
-            print('Running')
             # Execute commands
             self.execute()
 
@@ -395,7 +392,7 @@ class MySQL:
 
         @staticmethod
         def _get_commands(sql_script):
-            print('Getting commands')
+            print('\tRetrieving commands')
             # Open and read the file as a single buffer
             with open(sql_script, 'r') as fd:
                 sql_file = fd.read()
@@ -406,7 +403,7 @@ class MySQL:
 
         def execute(self):
             # Execute every command from the input file
-            print('Total commands: ', len(self.commands))
+            print('\tTotal commands: ', len(self.commands))
             for command in tqdm(self.commands, total=len(self.commands), desc='Executing SQL Commands'):
                 # This will skip and report errors
                 # For example, if the tables do not yet exist, this will skip over
@@ -418,12 +415,12 @@ class MySQL:
                     self.fail.append(command)
 
             # Write fail commands to a text file
-            print(self.success, 'total successful commands')
+            print(self.success, '\ttotal successful commands')
 
         def dump_fails(self):
             # Re-add semi-colon separator
             fails = [com + ';\n' for com in self.fail]
-            print(len(fails), 'total failed commands')
+            print('\t' + str(len(fails)), 'total failed commands')
 
             # Create a directory to save fail SQL scripts
             fails_dir = os.path.join(os.path.dirname(self.sql_script), 'fails')
