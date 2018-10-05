@@ -60,7 +60,7 @@ class MySQL:
             self._commit()
             self._close()
         except mysql.connector.errors.InterfaceError as e:
-            print('\t' + str(e))
+            print('\tError: ' + str(e))
             print('\tMySQL disconnected')
 
     # ------------------------------------------------------------------------------
