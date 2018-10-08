@@ -1,4 +1,1 @@
-mysql-connector>=2.1.6
-mysql-toolkit
-tqdm
-differentiate
+mysql-toolkit>=1.1.0
