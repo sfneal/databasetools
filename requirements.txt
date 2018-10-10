@@ -1,4 +1,4 @@
 differentiate==1.0.0
 mysql-connector==2.1.6
-mysql-toolkit==1.1.0
+mysql-toolkit>=1.2.0
 tqdm==4.26.0
