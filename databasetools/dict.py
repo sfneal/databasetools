@@ -1,19 +1,32 @@
 from pprint import pprint
 from databasetools.json import JSON
 from databasetools.pickle import Pickle
+import collections
+
+
+def flatten(d, parent_key='', sep='_'):
+    items = []
+    for k, v in d.items():
+        new_key = parent_key + sep + k if parent_key else k
+        if isinstance(v, collections.MutableMapping):
+            items.extend(flatten(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
 
 
 class DictTools:
     def __init__(self, path, protocol='json', enable_printing=True):
         """
         Save or load data to or from .npy dictionary file
-        :param directory: Directory to save or load file from
-        :param name: File name
+        :param path: Directory to save or load file from
         :param protocol: Method for saving and loading dictionaries
         """
         # Get dictionary of protocals
         protocols_dict = self.protocol_options()
-        self.choice = protocol.strip('.')  # Remove leading '.' if included in protocol var
+
+        # Remove leading '.' if included in protocol var
+        self.choice = protocol.strip('.')
         try:
             self.protocol = protocols_dict[self.choice]
         except KeyError:
