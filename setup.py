@@ -17,7 +17,7 @@ setup(
     version=get_version(name),
     packages=find_packages(),
     install_requires=[
-        'mysql-toolkit>=1.2.0',
+        'mysql-toolkit>=1.6.0',
     ],
     url='https://github.com/mrstephenneal/databasetools',
     license='MIT License',
