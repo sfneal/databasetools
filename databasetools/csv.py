@@ -20,8 +20,13 @@ class CSV:
         return self.file_path
 
     def append(self, data):
-        """Append rows to an existing CSV file"""
-        return self.write(data, method='a')
+        """Append rows to an existing CSV file."""
+        # CSV file exists, append rows
+        if os.path.exists(self.file_path):
+            return self.write(data, method='a')
+        # CSV file does NOT exist, create new file and write rows
+        else:
+            return self.write(data, method='w')
 
     def read(self):
         """Reads CSV file and returns list of contents"""
