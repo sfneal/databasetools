@@ -14,6 +14,10 @@ class CSV:
         :param data: Either a list of tuples or a list of lists.
         :param method: File opening method.
         """
+        # Create list of lists from flat list
+        data = data if isinstance(data[0], (list, set, tuple)) else [[d] for d in data]
+
+        # Open file and write rows
         with open(self.file_path, method) as write:
             wr = csv_builtin.writer(write)
             wr.writerows(data)
