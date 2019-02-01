@@ -1,4 +1,7 @@
-differentiate==1.0.0
+differentiate==1.2.1
+dirutility==0.4.4
+looptools==1.1.1
 mysql-connector==2.1.6
-mysql-toolkit>=1.2.0
+mysql-toolkit==1.8.17
+sqlparse==0.2.4
 tqdm==4.26.0
