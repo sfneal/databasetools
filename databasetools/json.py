@@ -20,3 +20,12 @@ class JSON:
         og_data = self.read()
         og_data[key] = data
         self.write(og_data)
+
+    def append(self, data, key=None):
+        """Append a value to list."""
+        og_data = self.read()
+        if key:
+            og_data[key].append(data)
+        else:
+            og_data.append(data)
+        self.write(og_data)
