@@ -1,5 +1,7 @@
 # Database Tools
 
+[![GuardRails badge](https://badges.production.guardrails.io/mrstephenneal/databasetools.svg)](https://www.guardrails.io)
+
 A collection of database tools written in Python for handling basic actions with CSV files, numpy dictionary, SQLite
 databases and MySQL databases.
 
